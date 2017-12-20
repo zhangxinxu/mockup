@@ -14,6 +14,9 @@ $('#btnPost').on('click', function () {
 		dataType: 'json',
 		success: function (json) {
 			elBtn.parent().after('<p>'+ json.msg +'</p>');
-		}
+		},
+        error: function () {
+            elBtn.parent().after('<p>ajax请求失败</p>');
+        }
 	});
 });
