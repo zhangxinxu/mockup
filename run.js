@@ -471,8 +471,6 @@ const pathSrcJS = './src/static/js/';
 const pathDistJS = './dist/static/js/';
 const pathSrcHTML = './src/views/html/';
 const pathDistHTML = './dist/views/html/';
-const pathSrcImage = './src/static/images/';
-const pathDistImage = './dist/static/images/';
 
 // 任务
 const task = {
@@ -545,15 +543,6 @@ const task = {
 			createPath(pathDistHTML);
 
 			this.compile();
-		}
-	},
-	image: {
-		init: function () {
-			clean(pathDistImage);
-			createPath(pathDistImage);
-
-			copy(pathSrcImage, pathDistImage);
-			console.log('图片同步成功');
 		}
 	}
 };
@@ -629,19 +618,6 @@ fs.watch(pathSrcHTML, {
 	timerHTML = setTimeout(() => {
 		task.html.init();
 		console.log('HTML编译执行...');
-	}, 100);
-});
-
-// 图片资源监控任务
-let timerImage;
-fs.watch(pathSrcImage, {
-	recursive: true
-}, (eventType, filename) => {
-	clearTimeout(timerImage);
-	console.log(filename + '发生了' + eventType + '变化');
-
-	timerImage = setTimeout(() => {
-		task.image.init();
 	}, 100);
 });
 
