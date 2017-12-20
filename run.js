@@ -675,7 +675,7 @@ let mimetype = {
 // 创建server
 let server = http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
-    var realPath = path.join('.', pathname);
+    var realPath = path.join('dist', pathname);
     //console.log(realPath);
     var ext = path.extname(realPath);
     ext = ext ? ext.slice(1) : 'unknown';
