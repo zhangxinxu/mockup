@@ -229,133 +229,156 @@ const compile = function (src, dist) {
 */
 
 let qCss = function (src, dist) {
-  // key转换
-  var keyMap = {
-	dn: 'display: none',
-	di: 'display: inline',
-	dib: 'display: inline-block',
-	db: 'display: block',
-	dt: 'display: table',
-	dtc: 'display: table-cell',
-	m: 'margin: ',
-	ml: 'margin-left: ',
-	mt: 'margin-top: ',
-	mr: 'margin-right: ',
-	mb: 'margin-bottom: ',
-	ma: 'margin: auto',
-	mla: 'margin-left: auto',
-	mra: 'margin-right: auto',
-	p: 'padding: ',
-	pl: 'padding-left: ',
-	pt: 'padding-top: ',
-	pr: 'padding-right: ',
-	pb: 'padding-bottom: ',
-	l: 'float: left',
-	r: 'float: right',
-	bg: 'background: ',
-	bgc: 'background-color: ',
-	bgi: 'background-image: ',
-	bgr: 'background-repeat: ',
-	bgp: 'background-position: ',
-	c: 'color: ',
-	bd: 'border: ',
-	bdl: 'border-left: ',
-	bdr: 'border-right: ',
-	bdt: 'border-top: ',
-	bdb: 'border-bottom: ',
-	br: 'border-radius: ',
-	bbb: 'box-sizing: border-box',
-	o: 'outline: ',
-	f: 'font-size: ',
-	ff: 'font-family: ',
-	fs: 'font-style: ',
-	fw: 'font-weight: ',
-	b: 'font-weight: bold',
-	i: 'font-style: italic',
-	n: 'font-weight: normal; font-style: normal',
-	tdl: 'text-decoration: underline',
-	tdn: 'text-decoration: none',
-	tc: 'text-align: center',
-	tl: 'text-align: left',
-	tr: 'text-align: right',
-	tj: 'text-align: justify',
-	cl: 'clear: both',
-	abs: 'position: absolute',
-	rel: 'position: relative',
-	fix: 'position: fixed',
-	op: 'opacity: ',
-	z: 'zoom: ',
-	zx: 'z-index: ',
-	h: 'height: ',
-	w: 'width: ',
-	minw: 'min-width: ',
-	maxw: 'max-width: ',
-	minh: 'min-height: ',
-	maxh: 'max-height: ',
-	lh: 'line-height: ',
-	v: 'vertical-align: ',
-	vt: 'vertical-align: top',
-	vm: 'vertical-align: middle',
-	vb: 'vertical-align: bottom',
-	poi: 'cursor: pointer',
-	def: 'cursor: default',
-	ovh: 'overflow: hidden',
-	ova: 'overflow: auto',
-	vh: 'visibility: hidden',
-	vv: 'visibility: visible',
-	prew: 'white-space: pre-wrap',
-	pre: 'white-space: pre',
-	nowrap: 'white-space: nowrap',
-	bk: 'word-break: break-all',
-	bkw: 'word-wrap: break-word',
-	ws: 'word-spacing: ',
-	ls: 'letter-spacing: ',
-	a: 'animation: ',
-	tsf: 'transform: ',
-	tsl: 'transition: ',
-	bs: 'box-shadow: ',
-	ts: 'text-shadow: ',
-	con: 'content: ',
-	center: 'position: absolute; top: 0; bottom: 0; right: 0; left: 0; margin: auto',
-	ell: 'text-overflow: ellipsis; white-space: nowrap; overflow: hidden',
-	clip: 'position: absolute; clip: rect(0 0 0 0)'
-  };
+	// key转换
+	var keyMap = {
+		dn: 'display: none',
+		di: 'display: inline',
+		dib: 'display: inline-block',
+		db: 'display: block',
+		dt: 'display: table',
+		dtc: 'display: table-cell',
+		m: 'margin: ',
+		ml: 'margin-left: ',
+		mt: 'margin-top: ',
+		mr: 'margin-right: ',
+		mb: 'margin-bottom: ',
+		ma: 'margin: auto',
+		mla: 'margin-left: auto',
+		mra: 'margin-right: auto',
+		p: 'padding: ',
+		pl: 'padding-left: ',
+		pt: 'padding-top: ',
+		pr: 'padding-right: ',
+		pb: 'padding-bottom: ',
+		l: 'float: left',
+		r: 'float: right',
+		bg: 'background: ',
+		bgc: 'background-color: ',
+		bgi: 'background-image: ',
+		bgr: 'background-repeat: ',
+		bgp: 'background-position: ',
+		c: 'color: ',
+		bd: 'border: ',
+		bdl: 'border-left: ',
+		bdr: 'border-right: ',
+		bdt: 'border-top: ',
+		bdb: 'border-bottom: ',
+		br: 'border-radius: ',
+		bbb: 'box-sizing: border-box',
+		o: 'outline: ',
+		f: 'font-size: ',
+		ff: 'font-family: ',
+		fs: 'font-style: ',
+		fw: 'font-weight: ',
+		b: 'font-weight: bold',
+		i: 'font-style: italic',
+		n: 'font-weight: normal; font-style: normal',
+		tdl: 'text-decoration: underline',
+		tdn: 'text-decoration: none',
+		tc: 'text-align: center',
+		tl: 'text-align: left',
+		tr: 'text-align: right',
+		tj: 'text-align: justify',
+		cl: 'clear: both',
+		abs: 'position: absolute',
+		rel: 'position: relative',
+		fix: 'position: fixed',
+		op: 'opacity: ',
+		z: 'zoom: ',
+		zx: 'z-index: ',
+		h: 'height: ',
+		w: 'width: ',
+		minw: 'min-width: ',
+		maxw: 'max-width: ',
+		minh: 'min-height: ',
+		maxh: 'max-height: ',
+		lh: 'line-height: ',
+		v: 'vertical-align: ',
+		vt: 'vertical-align: top',
+		vm: 'vertical-align: middle',
+		vb: 'vertical-align: bottom',
+		poi: 'cursor: pointer',
+		def: 'cursor: default',
+		ovh: 'overflow: hidden',
+		ova: 'overflow: auto',
+		vh: 'visibility: hidden',
+		vv: 'visibility: visible',
+		prew: 'white-space: pre-wrap',
+		pre: 'white-space: pre',
+		nowrap: 'white-space: nowrap',
+		bk: 'word-break: break-all',
+		bkw: 'word-wrap: break-word',
+		ws: 'word-spacing: ',
+		ls: 'letter-spacing: ',
+		a: 'animation: ',
+		tsf: 'transform: ',
+		tsl: 'transition: ',
+		bs: 'box-shadow: ',
+		ts: 'text-shadow: ',
+		con: 'content: ',
+		center: 'position: absolute; top: 0; bottom: 0; right: 0; left: 0; margin: auto',
+		ell: 'text-overflow: ellipsis; white-space: nowrap; overflow: hidden',
+		clip: 'position: absolute; clip: rect(0 0 0 0)'
+  	};
 
-  var valueMap = {
-	s: 'solid',
-	d: 'dashed',
-	tt: 'transparent',
-	cc: 'currentColor',
-	n: 'normal',
-	c: 'center',
-	rx: 'repeat-x',
-	ry: 'repeat-y',
-	no: 'no-repeat',
-	ih: 'inherit',
-	l: 'left',
-	t: 'top',
-	r: 'right',
-	b: 'bottom'
-  };
+  	var valueMap = {
+		s: 'solid',
+		d: 'dashed',
+		tt: 'transparent',
+		cc: 'currentColor',
+		n: 'normal',
+		c: 'center',
+		rx: 'repeat-x',
+		ry: 'repeat-y',
+		no: 'no-repeat',
+		ih: 'inherit',
+		l: 'left',
+		t: 'top',
+		r: 'right',
+		b: 'bottom'
+  	};
 
 	fs.readdirSync(src).forEach(function (filename) {
-  		let st = fs.statSync(path.join(src, filename));
-		if (/\.qcss$/.test(filename)) {
+		let pathQcssFile = path.join(src, filename);
+  		let st = fs.statSync(pathQcssFile);
+  		// 下划线开头的qcss文件不处理
+		if (/\.qcss$/.test(filename) && /^_/.test(filename) == false) {
 			// .qcss文件才处理
 			// 读文件内容
-			var data = fs.readFileSync(path.join(src, filename), {
+			var data = fs.readFileSync(pathQcssFile, {
 				// 需要指定编码方式，否则返回原生buffer
 				encoding: 'utf8'
 			});
 
-			// 计算出文件中设置的隐射
+			// @import处理
+			data = data.replace(/@import\s+([\w\W]*?);/g, function (matchs, url) {
+				if (/\.qcss/.test(url)) {
+					// 过滤引号，括号，或者url等
+					url = url.replace(/url|\'|\"|\(|\)/g, '');
+					// 判断qcss文件是否有
+					var pathImportQcss = path.join(src, url);
+
+					if (!fs.existsSync(pathImportQcss)) {
+						console.error(pathImportQcss + '文件不存在，忽略这段引入');
+						return '/* '+ matchs +' */';
+					}
+					// 替换成对应文件内容
+					return fs.readFileSync(pathImportQcss);
+				}
+				// 非.qcss格式原路返回
+				return matchs;
+			});
+
+
+			// 计算出文件中设置的映射
 			  let valueMapCustom = {};
 
-			  data.replace(/\/\*([\w\W]*?)\*\//, function (matchs, $1) {
+			  data.replace(/\/\*([\w\W]*?)\*\//g, function (matchs, $1) {
+
 				$1.split(';').forEach(function (parts) {
 				  let needPart = parts.split('$')[1];
-				  if (needPart && needPart.split('=').length == 2) {
-					let keyValue = needPart.split('=');
+				  if (needPart && needPart.split(/=|:/).length == 2) {
+					let keyValue = needPart.split(/=|:/);
 					if (keyValue[1].trim() && keyValue[0].trim()) {
 					  valueMapCustom[keyValue[0].trim()] = keyValue[1].trim();
 					}
@@ -434,7 +457,7 @@ let qCss = function (src, dist) {
 		} else if (st.isDirectory()) {
 			// 如果是文件夹
 			let qcssDir = path.join(src, filename);
-			let cssDir = qcssDir.replace('/qcss/', '/css/');
+			let cssDir = qcssDir.replace('qcss', 'css');
 			createPath(cssDir);
 			qCss(qcssDir, cssDir);
 		}

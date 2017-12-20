@@ -1,8 +1,6 @@
 @charset "UTF-8";
-/**
-$blue = #56a8fe;
-$dark = #454852;
-**/
+@import './_variable.qcss';
+
 /*主色*/
 body {
   color: dark;
@@ -27,36 +25,36 @@ a {
 
 /*hover蓝色*/
 a.blue:hover {
-  color: #549deb;
+  color: blurHover;
 }
 
 /*灰色*/
 .gray {
-  color: #989da3;
+  color: gray;
 }
 
 /*白色*/
 .white {
-  color: #fff;
+  color: white;
 }
 
 /* 绿色 */
 .green {
-  color: #01cf97;
+  color: green;
 }
 
 /* 橘色 */
 .orange {
-  color: #ffa05c;
+  color: orange;
 }
 
 /* 红色 */
 .red {
-  color: #f4615c;
+  color: red;
 }
 
 /* 浅色 */
 .light {
-  color: #f7f9fa;
+  color: light;
 }
 

@@ -1,7 +1,17 @@
 @charset "UTF-8";
-/*
+
+/**
 $blue = #56a8fe;
-*/
+$dark = #454852;
+$blueHover = #549deb;
+$gray = #989da3;
+$white = #fff;
+$green = #01cf97;
+$orange = #ffa05c;
+$red = #f4615c;
+$light = #f7f9fa;
+**/
+
 
 .header {
     height: 60px;

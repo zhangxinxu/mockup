@@ -6,3 +6,19 @@
  * @create 17-12-14
  * @description 主页相关样式
 **/
+
+@import '../common/_variable.qcss';
+
+/*
+圆角变量
+$radius: 2px;
+*/
+
+.home-p {
+    mt10; mb10;
+}
+
+.home-p > button {
+    w120; h30;
+    br radius;
+}

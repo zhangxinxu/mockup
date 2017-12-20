@@ -1,7 +1,6 @@
 @charset "UTF-8";
-/*
-$blue = #56a8fe;
-*/
+
+@import './_variable.qcss';
 
 .header {
     h60;
