@@ -1,8 +1,14 @@
-/*
- * hr系统原型开发node.js脚本
- * 1. 实时CSS合并;
- * 2. 实时JS合并；
- * 3. 实时html编译;
+/**
+ * @author zhangxinxu(.com)
+ * @version -
+ * @create 2017-12-20
+ * @description
+	1. HTML import功能，头部和尾部可以公用啦
+ 	2. 基于文件夹的CSS和JS资源合并策略
+	3. 支持qcss快速书写，变量以及@import模块引入
+ 	4. 本地http环境一键开启，post/get请求轻松模拟
+ * @url https://github.com/zhangxinxu/mockup
+ * @license MIT 保留原作者和原出处
 */
 
 const fs = require('fs');
