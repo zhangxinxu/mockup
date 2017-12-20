@@ -113,7 +113,7 @@
 </pre>
 
 <code>./src</code>  为开发目录，可以看到资源按照模块或者页面分得比较细<br>
-<code>./dist</code> 为生成目录，原型预览，和静态资源交付都在这个文件夹下。相比<code>./src</code>目录，多了<code>static/images</code>和<code>static/fonts</code>以及<code>views/cgi</code>文件夹，分别放置图片资源、字体资源和ajax请求页面。因为这些资源不参与node任务，因此，直接安排在<code>./dist目录下，省去拷贝的成本。
+<code>./dist</code> 为生成目录，原型预览，和静态资源交付都在这个文件夹下。相比<code>./src</code>目录，多了<code>static/images</code>和<code>static/fonts</code>以及<code>views/cgi</code>文件夹，分别放置图片资源、字体资源和ajax请求页面。因为这些资源不参与node任务，因此，直接安排在<code>./dist</code>目录下，省去拷贝的成本。
 
 一些说明：
 
@@ -224,10 +224,51 @@ qcss只会对后缀名是<code>qcss</code>引入文件进行处理，如果是<c
 
 ### 2. 关于合并
 
-先说说为什么要合并。
+合并仅在CSS和JS文件中存在，“魔卡”采用基于文件夹的合并策略。
 
-合并规则具体：
+具体表现为：
+* <code>./src/static/js</code>下所有1级文件夹中的JS会合并为和文件夹同命名的独立文件。例如，<code>.src/static/js/pages</code>文件夹下有<code>page1.js</code>和<code>page2.js</code>，当“魔卡”运行后，就会在<code>./dist/static/js</code>目录下合并成一个<code>pages.js</code>。但是，直接暴露在<code>./src/static/js</code>下的js文件是不参与合并，直接复制到<code>./dist/static/js</code>目录下。
+  其中，有一个例外，那就是<code>lib</code>文件夹下的JS是不参与合并的，通常用来放置JS框架，例如jquery, zepto之类。
+* <code>./src/static/css</code>下所有1级文件夹中的CSS会合并为和文件夹同命名的独立文件。例如，<code>.src/static/js/details</code>文件夹下有<code>home.css</code>，<code>page1.css</code>和<code>page2.css</code>，结果“魔卡”运行后通通合并成了<code>details.css</code>，在<code>./dist/static/css</code>目录下。同样的，直接直接暴露在<code>./src/static/css</code>下的css文件是不参与合并的。
 
-...
+合并不支持多级目录，个人经验，很少项目会用到超过2级的CSS, JS资源。于是就省电点，工具层面约束项目复杂度，使结构更加扁平。
 
-## “魔卡”问答
+### 3. 关于HTML编译
+
+html文件支持模块导入，采用html5 <code>import</code>语法，例如：
+
+<pre>&lt;link rel="import" href="./include/header.html?nav1=active"&gt;</pre>
+
+“魔卡”会将<code>"./include/header.html"</code>这个文件内容直接引入进来，类似php中的<code>include</code>功能。
+
+#### HTML编译支持简易查询
+
+“魔卡”的HTML编译支持通过URL查询字符串向引入的模块传递参数，不过功能比较单一，就是替换，例如：
+<pre>&lt;link rel="import" href="./include/header.html?nav2=active"&gt;</pre>
+
+这里的<code>nav2=active</code>就会替换header.html中的<code>$nav2$</code>为字符<code>'active'</code>。
+
+header.html原始HTML为：
+<pre>&lt;h3&gt;&lt;a href="./index.html" class="nav-a $nav1$"&gt;首页&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href="./page1.html" class="nav-a $nav2$"&gt;页面1&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href="./page2.html" class="nav-a $nav3$"&gt;页面2&lt;/a&gt;&lt;/h3&gt;</pre>
+
+HTML模块引入后就是：
+<pre>&lt;h3&gt;&lt;a href="./index.html" class="nav-a "&gt;首页&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href="./page1.html" class="nav-a active"&gt;页面1&lt;/a&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;a href="./page2.html" class="nav-a "&gt;页面2&lt;/a&gt;&lt;/h3&gt;</pre>
+
+于是，当我们点击导航切换到“页面1”的时候会发现导航按钮一起跟着高亮了，就是上面<code>nav2=active</code>的作用，如下图：
+
+![页面1导航高亮](https://qidian.qpic.cn/qidian_common/349573/38c37809be99c1ba497d985ca62b03f2/0)
+
+替换细则如下：
+
+替换所有前后都是<code>$</code>的字符单元，如果有匹配的查询关键字（如<code>nav2</code>），则替换为对应的值（如<code>active</code>）；否则替换为空字符串<code>''</code>。
+
+因此，虽然概率较小，但依然有会将引入模块中正常的<code>$$</code>包含内容替换的风险。如果遇到该问题，可以修改run.js中的<code>$</code>字符为更为生僻字符，例如❤之类。
+
+#### HTML编译的局限
+
+目前“魔卡”仅支持直接暴露在<code>./src/views/html</code>目录下的<code>.html</code>文件的编译，子目录<code>.html</code>直接忽略。95%+项目无压力，如果项目真的很复杂，上百个原型页面，不能不文件夹分组，请参照run.js中的示意，自己动手，对这些文件夹调用<code>complie()</code>方法。
+
