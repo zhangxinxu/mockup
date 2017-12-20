@@ -633,6 +633,7 @@ let mimetype = {
   'ico': 'image/x-icon',
   'jpeg': 'image/jpeg',
   'jpg': 'image/jpeg',
+  'webp': 'image/webp',
   'js': 'text/javascript',
   'json': 'application/json',
   'pdf': 'application/pdf',
@@ -645,6 +646,8 @@ let mimetype = {
   'eot': 'application/vnd.ms-fontobject',
   'txt': 'text/plain',
   'wav': 'audio/x-wav',
+  'mp3': 'audio/mpeg3',
+  'mp4': 'video/mp4',
   'xml': 'text/xml'
 };
 
@@ -684,9 +687,9 @@ let server = http.createServer(function (request, response) {
 });
 
 //设置监听端口
-let PORT = new Date().getFullYear();
-server.listen(PORT, '127.0.0.1', function () {
-    console.log('服务已经启动，端口为：' + PORT);
+let port = new Date().getFullYear();
+server.listen(port, '127.0.0.1', function () {
+    console.log('服务已经启动，端口为：' + port);
 });
 
 
