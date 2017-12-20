@@ -3,6 +3,7 @@
  * @version -
  * @create 2017-12-20
  * @description
+ 	魔卡——高保真原型交付Node.js工具，主要功能：
 	1. HTML import功能，头部和尾部可以公用啦
  	2. 基于文件夹的CSS和JS资源合并策略
 	3. 支持qcss快速书写，变量以及@import模块引入
