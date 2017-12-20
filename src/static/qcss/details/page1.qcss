@@ -1,0 +1,10 @@
+@charset "UTF-8";
+/**
+ *
+ * @page1.css
+ * @author zhangxinxu
+ * @create 17-12-14
+ * @description 子页1相关样式
+**/
+
+@import '../common/_variable.qcss';
