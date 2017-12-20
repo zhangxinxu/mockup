@@ -35,6 +35,8 @@
 * 支持qcss快速书写，变量以及@import模块引入
 * 本地http环境一键开启，post/get请求轻松模拟
 
+Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlpreview.github.io/?https://github.com/zhangxinxu/mockup/blob/master/dist/views/html/)
+
 ### 如何使用？
 
 1. 下载项目zip包：[master.zip](https://github.com/zhangxinxu/mockup/archive/master.zip)
