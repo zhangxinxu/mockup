@@ -24,7 +24,9 @@
 
 ## “魔卡”简介
 
-“魔卡”是个Node.js小工具，纯原生，无任何安装包依赖，所以，就很轻量了。通常后端开发都是windows机器多，因此，还准备了run.bat文件，直接双击就可以跑。产品同学也可以玩，开发同学也可以玩。
+“魔卡”是个Node.js小工具，开启一些动态特性，<strong>帮助前端人员以超高质量超高效率完成高保真静态原型页面</strong>，纯原生，无任何安装包依赖，很轻量。
+
+通常后端开发都是windows机器多，因此，还准备了run.bat文件，直接双击就可以跑。产品同学也可以玩，开发同学也可以玩。
 
 相比工程化那套东西要简单很多，也没有乱七八糟npm package安装问题。
 
@@ -50,7 +52,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 模板目录结构：
 
 <pre>
-./src             --HTML, JS, CSS资源开发目录
+./src             -&gt;HTML, JS, CSS资源开发目录
   |--static
   |    |--qcss
   |    |    |--common
@@ -92,7 +94,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
   |    |    |--index.html
   |    |    |--page1.html
   |    |    |--page2.html
-./dist            --最终给开发同学的资源目录
+./dist            -&gt;预览和最终资源交付目录
   |--static
   |    |--css
   |    |    |--common.css
@@ -284,4 +286,90 @@ HTML模块引入后就是：
 <pre>let port = new Date().getFullYear();</pre>
 
 因此，访问地址以 http://127.0.0.1:2017 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，可以修改port端口值。
+
+## 前端和后端工作分离策略
+
+通常项目开发，我们总会搭建一个和线上环境几乎类似的本地环境，ajax请求地址等等和线上都是一模一样的，唯一不同的就是域名（甚至通过host修改域名都是一样的），这样，JS中的ajax地址就能无缝上线。
+
+但是，对于原型交付式，尤其包含完整交互的高保真原型，上面的策略往往就不太现实。和你对接的开发是深圳的，写页面的前端是上海的，怎么一致？又或者办公系统维护的开发用的是.net，前端全部都是mac机子，怎么一致？
+
+因此，需要的是一个后端数据调试和前端JS，CSS完全分离的策略。
+
+理想状态是这样的：前端原型交付，开发改改页面，Duang！项目就做好了！
+
+有人可能会疑问，难道——
+* 不需要知道后台数据接口名称是什么？
+* 不需要知道后台什么开发模式开发环境？
+* 不需要知道开发静态资源怎么整的？
+
+对的，就是不需要！为什么呢？因为没有必要知道开发的环境、接口。
+
+策略很简单：所有动态部分放在页面上就可以了！
+
+4种处理手段，根据场景使用，包括：
+
+1. 走原生&lt;form&gt;表单；
+2. 模板以HTML形式呈现；
+3. 特殊场景使用<code>data-*</code>；
+4. 页面底部JS初始化暴露动态参数。
+  
+#### 1. 走表单 
+
+如下：
+<pre>&lt;form action="./cgi/getMessageData.json" method="get"&gt;
+    &lt;input type="hidden" name="type" value="message"&gt;
+&lt;/form&gt;</pre>
+
+
+对于原型页面，CSS，JS以及图片等是前端的；HTML页面是开发的，HTML页面上的动态信息的改动是不会影响到前端的。
+
+例如这里<code>action</code>就是和后端约定的接口地址，至于具体是什么，前端无需关心，只要我自己原型跑得通就可以，开发到时候替换成真实请求地址就好了；<code>name</code>属性值<code>type</code>就是接口数据需要的字段，开发觉得不满意，自己改掉就好了，随便改；如果发现还需要其他数据，再自己加一个<code>&lt;input&gt;</code>框就好了，例如加个用户id，直接<code>&lt;form&gt;</code>元素中再塞入一个：
+
+<pre>&lt;input type="hidden" name="userid" value="10001"&gt;</pre>
+
+#### 2. HTML模板
+
+HTML模板字符放置在页面上，不要内联到JavaScript中，这样，开发可以根据自己习惯改变下图所示的这些字段名称：
+
+<img src="https://qidian.qpic.cn/qidian_common/349573/4ff605dc242cf76d0cd52d6f224d47d1/0" width="521" height="275">
+
+#### 3. data-*自定义
+
+这个通常用在独立的按钮上，例如收藏某一个作品。最好么走<code>&lt;form&gt;</code>，如果觉得啰嗦，也可以类似下面这样：
+
+<pre>&lt;a href="javascript:" role="button" data-url="./cgi/fav.json" data-params="id=1&amp;action=add"&gt;删除&lt;/a&gt;</pre>
+
+<code>data-url</code>就是接口地址，<code>data-params</code>中放置需要数据字段。如果是get请求，还请求字段还可以直接放在<code>data-url</code>中，例如：
+<pre>&lt;a href="javascript:" role="button" data-url="./cgi/getData.json?id=1&amp;page=2"&gt;删除&lt;/a&gt;</pre>
+
+#### 4. JS初始化暴露
+
+在每个页面底部通过JS接口，或者全局参数暴露请求地址，例如：
+
+<pre>HOME.cgi.postUrl = '../cgi/succ.json';
+HOME.init();</pre>
+
+<pre>var G_DATA = {
+    postUrl: '../cgi/succ.json'
+};</pre>
+
+通过上面4中方式的处理，即使你在钓鱼，也不要担心开发同学进行不下去，因为JavaScript脚本中都是干干净净的交互逻辑，凡是开发同学需要的东西都在页面上。
+
+### “魔卡”和分离策略
+
+下面回到“魔卡”工具本身，当我们服务开启的时候，我们访问页面的URL就是一个很随便的URL，<code>/dist/views/html/xxx.html</code>，实际上线后路径多半是<code>/xxx.html</code>这种干净地址，如此随便的URL或许会让一个常年浸染于完整开发环境的前端不可理喻——和线上地址都不一样，上线不就出错了。
+
+别！不会出错。
+
+随便URL是合作方式和现实原因决定的，因为无论什么URL都不会影响实际开发：
+
+1. 前端和后端工作分离，跳转链接，ajax请求地址，页面上CSS, JS和image引入开发都会修改成线上地址的。
+2. CSS中的静态资源引用全部都相对路径，因为静态资源都是放在一个服务器上的，因此，上线到任何位置，只要在一起，也不会有路径问题。
+
+也就是，前提是，前端重构人员脑中要有根弦，哪些信息是动态的，必须要放在页面上，一定要清楚；否则，如果混在JavaScript中，那联调起来就麻烦了。
+
+换句话说，“魔卡”要想完全释放实战功力与前端和后端工作分离策略模切相关。
+
+
+当然，如果前端仅仅是写CSS，不写交互，这些鬼策略可以不用care，大家随意随意。不过我是建议前端把所有JS交互也接管，对自己成长和项目质量把控都有帮助。
 
