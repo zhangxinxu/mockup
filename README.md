@@ -42,41 +42,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 ### 如何使用？
 
 1. 下载项目zip包：[master.zip](https://github.com/zhangxinxu/mockup/archive/master.zip)
-2. 安装[node.js](https://nodejs.org/zh-cn/)
-3. 命令行node run。windows系统可以双击run.bat。
-
-此时“魔卡”就开启了本地服务，http://127.0.0.1:2017/views/html/*.html 访问。这里2017是可变的，是基于当前年份设置的。
-
-同时，全面监控HTML，CSS和JS资源。
-
-模板目录结构：
-
-<pre>
-./src             -&gt;HTML, JS, CSS资源开发目录
-  |--static
-  |    |--qcss
-  |    |    |--common
-  |    |    |    |--_variable.qcss
-  |    |    |    |--reset.qcss
-  |    |    |    |--color.qcss
-  |    |    |    |--layout.qcss
-  |    |    |    |--animate.qcss
-  |    |    |--details
-  |    |    |    |--home.qcss
-  |    |    |    |--page1.qcss
-  |    |    |    |--page2.qcss
-  |    |--css
-  |    |    |--common
-  |    |    |    |--reset.css
-  |    |    |    |--color.css
-  |    |    |    |--layout.css
-  |    |    |    |--animate.css
-  |    |    |--details
-  |    |    |    |--home.css
-  |    |    |    |--page1.css
-  |    |    |    |--page2.css
-  |    |--js
-  |    |    |--common
+  |    |    |--common
   |    |    |    |--lib
   |    |    |    |    |--jquery.js
   |    |    |    |--header.js
@@ -160,6 +126,19 @@ CSS常用属性和组合就那么多，例如：<code>float: left</code>这句�
 一开始可能不太习惯，但是一旦熟练了，你就再也回不去了。
 
 当然，你也可以按照自己的映射习惯修改，直接fork本项目，然后修改run.js中<code>qCss()</code>方法中的映射对象数据。
+
+qcss向前兼容正规语法，例如：
+
+<pre>.example {l; p10; mix-blend-mode: darken; }</pre>
+
+后面的<code>mix-blend-mode</code>依然正常语法显示，不要担心后面<code>darken</code>会被替换（即使声明了<code>darken</code>变量），qcss会先判断声明是否是正确CSS语法，正确的原路返回，不正确认为是qcss自定义语法，会进行字符处理。
+
+<pre>.example {
+    float: left;
+    padding: 10px;
+    mix-blend-mode: darken;
+}</pre>
+
 
 #### qcss更多功能
 
