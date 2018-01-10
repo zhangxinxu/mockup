@@ -417,30 +417,34 @@ let qCss = function (src, dist) {
 				  // state指一段声明，例如f 20，此时下面的key是f, value是20
 				  return state.replace(/^([a-z]+)(.*)$/g, function (matchs, key, value) {
 					// 值主要是增加单位，和一些关键字转换
-					value = (value || '').split(' ').map(function (parts) {
-					  parts = parts.trim();
-					  if (!parts) {
-						return '';
-					  }
 
-					  if (!isNaN(parts)) {
-						// 数值自动加px单位
-						// 不包括行高
-						if (key == 'lh' && parts < 5) {
-							return parts;
-						} else if (/^(?:zx|op|z|fw)$/.test(key) == false && parts != '0' && /^calc/.test(value.trim()) == false) {
-						  parts = parts + 'px';
-						}
-					  } else if (key == 'tsl') {
-					  	// transition过渡
-						parts = (keyMap[parts] || parts).replace(':', '').trim();
-					  } else if (key != 'a') {
-						// CSS动画不对值进行替换
-						parts = valueMapCustom[parts] || valueMap[parts] || parts;
-					  }
+					// 1. 逗号
+					value = (value || '').split(',').map(function (multiple) {
+						return (multiple || '').split(' ').map(function (parts) {
+						  parts = parts.trim();
+						  if (!parts) {
+							return '';
+						  }
 
-					  return parts;
-					}).join(' ');
+						  if (!isNaN(parts)) {
+							// 数值自动加px单位
+							// 不包括行高
+							if (key == 'lh' && parts < 5) {
+								return parts;
+							} else if (/^(?:zx|op|z|fw)$/.test(key) == false && parts != '0' && /^calc/.test(multiple.trim()) == false) {
+							  parts = parts + 'px';
+							}
+						  } else if (key == 'tsl') {
+						  	// transition过渡
+							parts = (keyMap[parts] || parts).replace(':', '').trim();
+						  } else if (key != 'a') {
+							// CSS动画不对值进行替换
+							parts = valueMapCustom[parts] || valueMap[parts] || parts;
+						  }
+						  return parts;
+						}).join(' ');
+					}).join(', ');
+
 
 					// 键转换
 					key = keyMap[key] || key + ': ';
