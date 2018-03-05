@@ -129,7 +129,7 @@ $light = #f7f9fa;
 }
 .nav-a:hover,
 .nav-a.active {
-    background-color: rgba(0,0,0,.1);
+    background-color: rgba(0, 0, 0, .1);
 }
 
 .footer {

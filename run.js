@@ -3,11 +3,11 @@
  * @version -
  * @create 2017-12-20
  * @description
- 	魔卡——高保真原型交付Node.js工具，主要功能：
+	魔卡——高保真原型交付Node.js工具，主要功能：
 	1. HTML import功能，头部和尾部可以公用啦
- 	2. 基于文件夹的CSS和JS资源合并策略
+	2. 基于文件夹的CSS和JS资源合并策略
 	3. 支持qcss快速书写，变量以及@import模块引入
- 	4. 本地http环境一键开启，post/get请求轻松模拟
+	4. 本地http环境一键开启，post/get请求轻松模拟
  * @url https://github.com/zhangxinxu/mockup
  * @license MIT 保留原作者和原出处
 */
@@ -290,7 +290,7 @@ let qCss = function (src, dist) {
 		abs: 'position: absolute',
 		rel: 'position: relative',
 		fix: 'position: fixed',
-		op: 'opacity: ',
+		opa: 'opacity: ',
 		z: 'zoom: ',
 		zx: 'z-index: ',
 		h: 'height: ',
@@ -326,9 +326,9 @@ let qCss = function (src, dist) {
 		center: 'position: absolute; top: 0; bottom: 0; right: 0; left: 0; margin: auto',
 		ell: 'text-overflow: ellipsis; white-space: nowrap; overflow: hidden',
 		clip: 'position: absolute; clip: rect(0 0 0 0)'
-  	};
+	};
 
-  	var valueMap = {
+	var valueMap = {
 		s: 'solid',
 		d: 'dashed',
 		tt: 'transparent',
@@ -343,12 +343,12 @@ let qCss = function (src, dist) {
 		t: 'top',
 		r: 'right',
 		b: 'bottom'
-  	};
+	};
 
 	fs.readdirSync(src).forEach(function (filename) {
 		let pathQcssFile = path.join(src, filename);
-  		let st = fs.statSync(pathQcssFile);
-  		// 下划线开头的qcss文件不处理
+		let st = fs.statSync(pathQcssFile);
+		// 下划线开头的qcss文件不处理
 		if (/\.qcss$/.test(filename) && /^_/.test(filename) == false) {
 			// .qcss文件才处理
 			// 读文件内容
@@ -378,85 +378,111 @@ let qCss = function (src, dist) {
 
 
 			// 计算出文件中设置的映射
-			  let valueMapCustom = {};
+			let valueMapCustom = {};
 
-			  data.replace(/\/\*([\w\W]*?)\*\//g, function (matchs, $1) {
+			data.replace(/\/\*([\w\W]*?)\*\//g, function (matchs, $1) {
 
 				$1.split(';').forEach(function (parts) {
-				  let needPart = parts.split('$')[1];
-				  if (needPart && needPart.split(/=|:/).length == 2) {
-					let keyValue = needPart.split(/=|:/);
-					if (keyValue[1].trim() && keyValue[0].trim()) {
-					  valueMapCustom[keyValue[0].trim()] = keyValue[1].trim();
-					}
-				  }
-				});
-			  });
-
-			  let dataReplace = data.replace(/\{([\w\W]*?)\}/g, function (matchs, $1) {
-				let space = '    ';
-				let prefix = '{\n' + space, suffix = '\n}';
-				// 查询语句处理
-				if (/\{/.test($1)) {
-					suffix = '\n' + space + '}';
-					space = space + space;
-				  prefix = '{' + $1.split('{')[0] + '{\n' + space;
-
-				  $1 = $1.split('{')[1];
-				}
-				// 替换
-				// 分号是分隔符
-				return prefix + $1.split(';').map(function (state) {
-				  state = state.trim();
-				  if (!state) {
-					return '';
-				  }
-				  if (state.indexOf(':') != -1) {
-					return state;
-				  }
-				  // state指一段声明，例如f 20，此时下面的key是f, value是20
-				  return state.replace(/^([a-z]+)(.*)$/g, function (matchs, key, value) {
-					// 值主要是增加单位，和一些关键字转换
-
-					// 1. 逗号
-					value = (value || '').split(',').map(function (multiple) {
-						return (multiple || '').split(' ').map(function (parts) {
-						  parts = parts.trim();
-						  if (!parts) {
-							return '';
-						  }
-
-						  if (!isNaN(parts)) {
-							// 数值自动加px单位
-							// 不包括行高
-							if (key == 'lh' && parts < 5) {
-								return parts;
-							} else if (/^(?:zx|op|z|fw)$/.test(key) == false && parts != '0' && /^calc/.test(multiple.trim()) == false) {
-							  parts = parts + 'px';
+					let needPart = parts.split('$')[1];
+				  		if (needPart && needPart.split(/=|:/).length == 2) {
+							let keyValue = needPart.split(/=|:/);
+							if (keyValue[1].trim() && keyValue[0].trim()) {
+					  			valueMapCustom[keyValue[0].trim()] = keyValue[1].trim();
 							}
-						  } else if (key == 'tsl') {
-						  	// transition过渡
-							parts = (keyMap[parts] || parts).replace(':', '').trim();
-						  } else if (key != 'a') {
-							// CSS动画不对值进行替换
-							parts = valueMapCustom[parts] || valueMap[parts] || parts;
-						  }
-						  return parts;
-						}).join(' ');
-					}).join(', ');
+				  		}
+					});
+			  	});
+			  	// base64 protect
+			  	data = data.replace(/;base64,/g, '%%%%%%');
 
+			  	let dataReplace = data.replace(/\{([\w\W]*?)\}/g, function (matchs, $1) {
+					// 删除声明块中的/**/注释
+					$1 = $1.replace(/\/\*([\w\W]*?)\*\//g, '');
 
-					// 键转换
-					key = keyMap[key] || key + ': ';
+					let space = '    ';
+					let prefix = '{\n' + space, suffix = '\n}';
+					// 查询语句处理
+					if (/\{/.test($1)) {
+						suffix = '\n' + space + '}';
+						space = space + space;
+					  	prefix = '{' + $1.split('{')[0] + '{\n' + space;
 
-					return key + value.trim();
-				  });
-				}).join(';\n' + space).trim() + suffix;
-			  }).replace(/\w\{/g, function (matchs) {
-			  return matchs.replace('{', ' {');
+					  	$1 = $1.split('{')[1];
+					}
+					// 替换
+					// 分号是分隔符
+					return prefix + $1.split(';').map(function (state) {
+					  state = state.trim();
+					  if (!state) {
+						return '';
+					  }
+					  if (state.indexOf(':') != -1) {
+						return state;
+					  }
+					  // state指一段声明，例如f 20，此时下面的key是f, value是20
+					  return state.replace(/^([a-z]+)(.*)$/g, function (matchs, key, value) {
+						// 值主要是增加单位，和一些关键字转换
+
+						// 1. 逗号
+						value = (value || '').split(',').map(function (multiple) {
+							return (multiple || '').split(' ').map(function (parts) {
+								parts = parts.trim();
+								if (!parts) {
+									return '';
+								}
+
+								if (key == 'l') {
+									key = 'left: ';
+								} else if (key == 't') {
+									key = 'top: ';
+								} else if (key == 'r') {
+									key = 'right: ';
+								} else if (key == 'b') {
+									key = 'bottom: ';
+								}
+
+								if (!isNaN(parts)) {
+									// 数值自动加px单位
+									// 不包括行高
+									if (key == 'lh' && parts < 5) {
+										return parts;
+									} else if (/^(?:zx|opa|z|fw)$/.test(key) == false && parts != '0' && /^calc/.test(multiple.trim()) == false) {
+										parts = parts + 'px';
+									}
+								} else if (key == 'tsl') {
+									// transition过渡
+									parts = (keyMap[parts] || parts).replace(':', '').trim();
+								} else if (key != 'a') {
+									// CSS动画不对值进行替换
+									parts = valueMapCustom[parts] || valueMap[parts] || parts;
+								}
+								return parts;
+							}).join(' ');
+						}).join(', ');
+
+						// 键转换
+						if (/:/.test(key) == false) {
+							key = keyMap[key] || key + ': ';
+						}
+						value = value.trim();
+						// 对齐美化
+						if (!value) {
+							key = key.split(';').map(function (beauty) {
+								return beauty.trim().replace(/:\s+/, ': ');
+							}).join(';\n' + space);
+						}
+
+						return key + value;
+					  });
+					}).join(';\n' + space).trim() + suffix;
+			  	}).replace(/\w\{/g, function (matchs) {
+			  	return matchs.replace('{', ' {');
 			}).replace(/\}(\.|#|\:|\[|\w)/g, function (matchs) {
 			  return matchs.replace('}', '}\n');
 			});
+
+			// base64 back
+			dataReplace = dataReplace.replace(/%%%%%%/g, ';base64,');
 
 			// 于是生成新的CSS文件
 			let newFilename = filename.replace('.qcss', '.css');
@@ -664,43 +690,43 @@ let mimetype = {
 
 // 创建server
 let server = http.createServer(function (request, response) {
-    var pathname = url.parse(request.url).pathname;
-    var realPath = path.join('dist', pathname);
-    //console.log(realPath);
-    var ext = path.extname(realPath);
-    ext = ext ? ext.slice(1) : 'unknown';
-    fs.exists(realPath, function (exists) {
-        if (!exists) {
-            response.writeHead(404, {
-                'Content-Type': 'text/plain'
-            });
+	var pathname = url.parse(request.url).pathname;
+	var realPath = path.join('dist', pathname);
+	//console.log(realPath);
+	var ext = path.extname(realPath);
+	ext = ext ? ext.slice(1) : 'unknown';
+	fs.exists(realPath, function (exists) {
+		if (!exists) {
+			response.writeHead(404, {
+				'Content-Type': 'text/plain'
+			});
 
-            response.write('This request URL ' + pathname + ' was not found on this server.');
-            response.end();
-        } else {
-            fs.readFile(realPath, 'binary', function (err, file) {
-                if (err) {
-                    response.writeHead(500, {
-                        'Content-Type': 'text/plain'
-                    });
-                    response.end(err);
-                } else {
-                    var contentType = mimetype[ext] || 'text/plain';
-                    response.writeHead(200, {
-                        'Content-Type': contentType
-                    });
-                    response.write(file, 'binary');
-                    response.end();
-                }
-            });
-        }
-    });
+			response.write('This request URL ' + pathname + ' was not found on this server.');
+			response.end();
+		} else {
+			fs.readFile(realPath, 'binary', function (err, file) {
+				if (err) {
+					response.writeHead(500, {
+						'Content-Type': 'text/plain'
+					});
+					response.end(err);
+				} else {
+					var contentType = mimetype[ext] || 'text/plain';
+					response.writeHead(200, {
+						'Content-Type': contentType
+					});
+					response.write(file, 'binary');
+					response.end();
+				}
+			});
+		}
+	});
 });
 
 //设置监听端口
 let port = new Date().getFullYear();
 server.listen(port, '127.0.0.1', function () {
-    console.log('服务已经启动，端口为：' + port);
+	console.log('服务已经启动，端口为：' + port);
 });
 
 

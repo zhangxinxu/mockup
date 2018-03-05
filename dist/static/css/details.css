@@ -74,3 +74,15 @@ $orange = #ffa05c;
 $red = #f4615c;
 $light = #f7f9fa;
 **/
+
+
+/* 下面为测试代码 */
+.class-a {
+    width: 100px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    left: 100px;
+    top: 100px;
+    float: left;
+}

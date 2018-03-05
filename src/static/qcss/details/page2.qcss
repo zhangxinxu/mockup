@@ -8,3 +8,12 @@
 **/
 
 @import '../common/_variable.qcss';
+
+/* 下面为测试代码 */
+.class-a {
+    w100;
+    ell;
+    l100;
+    t100;
+    l;
+}
