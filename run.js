@@ -346,8 +346,8 @@ let qCss = function (src, dist) {
 	};
 
 	fs.readdirSync(src).forEach(function (filename) {
-		let pathQcssFile = path.join(src, filename);
-		let st = fs.statSync(pathQcssFile);
+		var pathQcssFile = path.join(src, filename);
+		var st = fs.statSync(pathQcssFile);
 		// 下划线开头的qcss文件不处理
 		if (/\.qcss$/.test(filename) && /^_/.test(filename) == false) {
 			// .qcss文件才处理
@@ -376,53 +376,50 @@ let qCss = function (src, dist) {
 				return matchs;
 			});
 
-
 			// 计算出文件中设置的映射
-			let valueMapCustom = {};
+			var valueMapCustom = {};
 
 			data.replace(/\/\*([\w\W]*?)\*\//g, function (matchs, $1) {
-
 				$1.split(';').forEach(function (parts) {
-					let needPart = parts.split('$')[1];
-				  		if (needPart && needPart.split(/=|:/).length == 2) {
-							let keyValue = needPart.split(/=|:/);
-							if (keyValue[1].trim() && keyValue[0].trim()) {
-					  			valueMapCustom[keyValue[0].trim()] = keyValue[1].trim();
-							}
-				  		}
-					});
-			  	});
-			  	// base64 protect
-			  	data = data.replace(/;base64,/g, '%%%%%%');
+					var needPart = parts.split('$')[1];
+			  		if (needPart && needPart.split(/=|:/).length == 2) {
+						var keyValue = needPart.split(/=|:/);
+						if (keyValue[1].trim() && keyValue[0].trim()) {
+				  			valueMapCustom[keyValue[0].trim()] = keyValue[1].trim();
+						}
+			  		}
+				});
+			});
+		  	// base64 protect
+		  	data = data.replace(/;base64,/g, '%%%%%%');
 
-			  	let dataReplace = data.replace(/\{([\w\W]*?)\}/g, function (matchs, $1) {
+		  	var dataReplace = data.replace(/\{([\w\W]*?)\}/g, function (matchs, $1) {
 					// 删除声明块中的/**/注释
-					$1 = $1.replace(/\/\*([\w\W]*?)\*\//g, '');
+				$1 = $1.replace(/\/\*([\w\W]*?)\*\//g, '');
 
-					let space = '    ';
-					let prefix = '{\n' + space, suffix = '\n}';
-					// 查询语句处理
-					if (/\{/.test($1)) {
-						suffix = '\n' + space + '}';
-						space = space + space;
-					  	prefix = '{' + $1.split('{')[0] + '{\n' + space;
+				var space = '    ';
+				var prefix = '{\n' + space, suffix = '\n}';
+				// 查询语句处理
+				if (/\{/.test($1)) {
+					suffix = '\n' + space + '}';
+					space = space + space;
+				  	prefix = '{' + $1.split('{')[0] + '{\n' + space;
 
-					  	$1 = $1.split('{')[1];
-					}
-					// 替换
-					// 分号是分隔符
-					return prefix + $1.split(';').map(function (state) {
-					  state = state.trim();
-					  if (!state) {
+				  	$1 = $1.split('{')[1];
+				}
+				// 替换
+				// 分号是分隔符
+				return prefix + $1.split(';').map(function (state) {
+					state = state.trim();
+					if (!state) {
 						return '';
-					  }
-					  if (state.indexOf(':') != -1) {
+					}
+					if (state.indexOf(':') != -1) {
 						return state;
-					  }
-					  // state指一段声明，例如f 20，此时下面的key是f, value是20
-					  return state.replace(/^([a-z]+)(.*)$/g, function (matchs, key, value) {
+					}
+					// state指一段声明，例如f 20，此时下面的key是f, value是20
+					return state.replace(/^([a-z]+)(.*)$/g, function (matchs, key, value) {
 						// 值主要是增加单位，和一些关键字转换
-
 						// 1. 逗号
 						value = (value || '').split(',').map(function (multiple) {
 							return (multiple || '').split(' ').map(function (parts) {
@@ -473,19 +470,19 @@ let qCss = function (src, dist) {
 						}
 
 						return key + value;
-					  });
-					}).join(';\n' + space).trim() + suffix;
-			  	}).replace(/\w\{/g, function (matchs) {
+				  	});
+				}).join(';\n' + space).trim() + suffix;
+		  	}).replace(/\w\{/g, function (matchs) {
 			  	return matchs.replace('{', ' {');
 			}).replace(/\}(\.|#|\:|\[|\w)/g, function (matchs) {
-			  return matchs.replace('}', '}\n');
+			  	return matchs.replace('}', '}\n');
 			});
 
 			// base64 back
 			dataReplace = dataReplace.replace(/%%%%%%/g, ';base64,');
 
 			// 于是生成新的CSS文件
-			let newFilename = filename.replace('.qcss', '.css');
+			var newFilename = filename.replace('.qcss', '.css');
 			fs.writeFileSync(path.join(dist, newFilename), dataReplace, {
 				encoding: 'utf8'
 			});
@@ -493,8 +490,8 @@ let qCss = function (src, dist) {
 			console.log(newFilename + '生成成功！');
 		} else if (st.isDirectory()) {
 			// 如果是文件夹
-			let qcssDir = path.join(src, filename);
-			let cssDir = qcssDir.replace('qcss', 'css');
+			var qcssDir = path.join(src, filename);
+			var cssDir = qcssDir.replace('qcss', 'css');
 			createPath(cssDir);
 			qCss(qcssDir, cssDir);
 		}
