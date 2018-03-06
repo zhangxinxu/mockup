@@ -476,7 +476,7 @@ let qCss = function (src, dist) {
 			  	return matchs.replace('{', ' {');
 			}).replace(/\}(\.|#|\:|\[|\w)/g, function (matchs) {
 			  	return matchs.replace('}', '}\n');
-			});
+			}).replace(/^\s{8}/gm, '    ').replace(/^\s{4}\}/gm, '}');
 
 			// base64 back
 			dataReplace = dataReplace.replace(/%%%%%%/g, ';base64,');
