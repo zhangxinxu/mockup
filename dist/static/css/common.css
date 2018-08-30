@@ -26,11 +26,11 @@ a {
     color: inherit;
 }
 .black {
-    color: #000;
+    color: var(--black, #000);
 }
 /*蓝色*/
 .blue, a.dark:hover {
-    color: blue;
+    color: #56a8fe;
 }
 /*hover蓝色*/
 a.blue:hover {
@@ -73,7 +73,7 @@ a.blue:hover {
     margin: auto;
 }
 .nav {
-    background-color: initial;
+    background-color: #56a8fe;
     overflow: hidden;
 }
 .nav-a {
@@ -89,7 +89,7 @@ a.blue:hover {
     background-color: rgba(0, 0, 0, .1);
 }
 .footer {
-    background-color: initial;
+    background-color: #56a8fe;
 }
 .footer-p {
     color: #fff;

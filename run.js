@@ -267,6 +267,9 @@ let qCss = function (src, data) {
 	var valueMapCustom = {};
 
 	data = data.replace(/(?:\:root|html|body)\s*\{([\w\W]*?)\}/g, function (matchs, $1) {
+		// 去掉注释
+		$1 = $1.replace(/\/\*[\w\W]*?\*\//g, '');
+		// 是否替换变量声明的标志量
 		var isReplaced = false;
 		$1.split(';').forEach(function (parts) {
 			if (parts.trim() == '!') {
@@ -297,12 +300,7 @@ let qCss = function (src, data) {
   			// var(--blue, #000)
   			return state.replace(/var\(([\w\W]*?)\)/, function (varMatchs, $var1) {
   				let keyVar = $var1.split(',')[0].trim();
-  				let backupVar = $var1.split(',')[1];
-  				if (backupVar) {
-  					backupVar = backupVar.trim() || 'initial';
-  				}
-
-  				return valueMapCustom[keyVar] || backupVar || 'initial';
+  				return valueMapCustom[keyVar] || varMatchs;
   			});
   		}).join(';'));
   	});
