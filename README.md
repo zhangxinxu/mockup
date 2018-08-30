@@ -34,7 +34,7 @@
 
 * HTML import功能，头部和尾部可以公用啦
 * 基于文件夹的CSS和JS资源合并策略
-* 支持qcss快速书写，变量以及@import模块引入
+* <del>支持qcss快速书写，变量以及@import模块引入</del>
 * 本地http环境一键开启，post/get请求轻松模拟
 
 Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlpreview.github.io/?https://github.com/zhangxinxu/mockup/blob/master/dist/views/html/)
@@ -54,17 +54,6 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 <pre>
 ./src             -&gt;HTML, JS, CSS资源开发目录
   |--static
-  |    |--qcss
-  |    |    |--common
-  |    |    |    |--_variable.qcss
-  |    |    |    |--reset.qcss
-  |    |    |    |--color.qcss
-  |    |    |    |--layout.qcss
-  |    |    |    |--animate.qcss
-  |    |    |--details
-  |    |    |    |--home.qcss
-  |    |    |    |--page1.qcss
-  |    |    |    |--page2.qcss
   |    |--css
   |    |    |--common
   |    |    |    |--reset.css
@@ -128,116 +117,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 
 ### 1. 关于qcss
 
-qcss本质上是一个CSS编译工具，可以将自定义的语法转换成合法的CSS语法。
-
-设计初衷源自：
-
-CSS常用属性和组合就那么多，例如：<code>float: left</code>这句声明在一二大项目里，估计写个百八十遍都有的。即使有提示工具，还是要敲几个字母，还是要上下键选择，还是要回车。要是直接写一个字母<code>l</code>就表示<code>float: left</code>岂不写起来更快？
-还有些CSS组合是固定的，例如，文本打点：
-<pre>text-overflow: ellipsis; white-space: nowrap; overflow: hidden</pre>
-
-要是直接<code>ell</code>写3个字母就有上面组合，岂不是写CSS要快很多。
-  
-基于这个诉求，于是创建了qcss，对将近90多个CSS属性和CSS声明进行了简化书写。例如：
-
-<pre>.example {l; p10; m5 0; f12; cl; z1; }</pre>
-
-会自动转换成如下CSS：
-
-<pre>.example {
-    float: left;
-    padding: 10px;
-    margin: 5px 0;
-    font-size: 12px;
-    clear: both;
-    z-index: 1;
-}</pre>
-
-完整映射规则可参考这个项目的文档说明：https://github.com/zhangxinxu/gulp-qcss
-
-名称映射规则源自我很早之前[zxx.lib.css](https://github.com/zhangxinxu/zxx.lib.css)的命名习惯。
-
-一开始可能不太习惯，但是一旦熟练了，你就再也回不去了。
-
-当然，你也可以按照自己的映射习惯修改，直接fork本项目，然后修改run.js中<code>qCss()</code>方法中的映射对象数据。
-
-
-qcss向前兼容正规语法，例如：
-
-<pre>.example {l; p10; mix-blend-mode: darken; }</pre>
-
-后面的<code>mix-blend-mode</code>依然正常语法显示，不要担心后面<code>darken</code>会被替换（即使声明了<code>darken</code>变量），qcss会先判断声明是否是正确CSS语法，正确的原路返回，不正确认为是qcss自定义语法，会进行字符处理。
-
-<pre>.example {
-    float: left;
-    padding: 10px;
-    mix-blend-mode: darken;
-}</pre>
-
-#### qcss更多功能
-
-#####  ①. 支持变量
-
-qcss还支持变量，变量声明写在qcss文件注释中，通过<code>$</code>标记，使用示意：
-
-<pre>/*
-$light = #eee;
-*/</pre>
-
-会替换：
-<pre>.class { bg light; }</pre>
-
-为：
-<pre>.class { background: #eee }</pre>
-
-也可以使用冒号标记：
-<pre>/*
-$light: #eee;
-*/</pre>
-
-注释也可以不正经：
-<pre>/**!------
-$light: #eee;
-----**/</pre>
-
-甚至可以乱入其他文字：
-<pre>/*
-定义单色变量
-$light: #eee;
-*/</pre>
-
-变量值长度不受限：
-<pre>/*
-$font = 'Helvetica Neue','PingFang SC','Myriad Pro','Hiragino Sans GB','microsoft yahei';
-*/</pre>
-
-注意，变量只会替换属性值，不会替换属性名称。所以下面的写法是不行的：
-
-<pre>/*
-<del>$cb = color: blue;</del>
-*/</pre>
-
-如果要支持，请在run.js中添加。
-
-同时注意不要和CSS关键字取同样的名字，例如：
-<pre>/*
-$left: 4px;
-*/</pre>
-
-可能会将正常的<code>left</code>关键字替换。
-
-##### ②. 支持@import模块引入
-
-qcss还支持@import模块引入，使用示意：
-
-<pre>@import './_variable.qcss';</pre>
-
-实际上，没有引号，使用双引号，或者<code>url()</code>括起来都是可以的，就是分号不能丢。
-
-qcss只会对后缀名是<code>qcss</code>引入文件进行处理，如果是<code>css</code>后缀，则生成的CSS代码保留原样。也就是不会影响原始的@import引入CSS的功能。
-
-#### qcss其他说明
-所有qcss文件会一对一生成css文件，但是有一个例外，就是下划线<code>_</code>开头的qcss文件是不参与编译的，例如<code>_variable.qcss</code>就不会生成对应的CSS文件。
+作者补充：经过实践发现，qcss对于效率的提升没有预想的高，反而增加了额外的学习成本和工具复杂度（虽然设计的时候支持不使用），于是，现在直接移除了qcss。
 
 ### 2. 关于合并
 
