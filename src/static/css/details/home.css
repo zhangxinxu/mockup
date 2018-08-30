@@ -7,24 +7,6 @@
  * @description 主页相关样式
 **/
 
-/**
-$blue = #56a8fe;
-$dark = #454852;
-$blueHover = #549deb;
-$gray = #989da3;
-$white = #fff;
-$green = #01cf97;
-$orange = #ffa05c;
-$red = #f4615c;
-$light = #f7f9fa;
-**/
-
-
-/*
-圆角变量
-$radius: 2px;
-*/
-
 .home-p {
     margin-top: 10px;
     margin-bottom: 10px;

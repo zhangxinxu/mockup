@@ -7,24 +7,6 @@
  * @description 主页相关样式
 **/
 
-/**
-$blue = #56a8fe;
-$dark = #454852;
-$blueHover = #549deb;
-$gray = #989da3;
-$white = #fff;
-$green = #01cf97;
-$orange = #ffa05c;
-$red = #f4615c;
-$light = #f7f9fa;
-**/
-
-
-/*
-圆角变量
-$radius: 2px;
-*/
-
 .home-p {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -43,17 +25,6 @@ $radius: 2px;
  * @description 子页1相关样式
 **/
 
-/**
-$blue = #56a8fe;
-$dark = #454852;
-$blueHover = #549deb;
-$gray = #989da3;
-$white = #fff;
-$green = #01cf97;
-$orange = #ffa05c;
-$red = #f4615c;
-$light = #f7f9fa;
-**/
 @charset "UTF-8";
 /**
  *
@@ -62,19 +33,6 @@ $light = #f7f9fa;
  * @create 17-12-14
  * @description 子页2相关样式
 **/
-
-/**
-$blue = #56a8fe;
-$dark = #454852;
-$blueHover = #549deb;
-$gray = #989da3;
-$white = #fff;
-$green = #01cf97;
-$orange = #ffa05c;
-$red = #f4615c;
-$light = #f7f9fa;
-**/
-
 
 /* 下面为测试代码 */
 .class-a {
