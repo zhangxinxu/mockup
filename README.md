@@ -51,8 +51,8 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 
 模板目录结构：
 
-<pre>
-./src             -&gt;HTML, JS, CSS资源开发目录
+```js
+./src             -> HTML, JS, CSS资源开发目录
   |--static
   |    |--css
   |    |    |--common
@@ -83,7 +83,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
   |    |    |--index.html
   |    |    |--page1.html
   |    |    |--page2.html
-./dist            -&gt;预览和最终资源交付目录
+./dist            -> 预览和最终资源交付目录
   |--static
   |    |--css
   |    |    |--common.css
@@ -103,7 +103,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
   |    |    |--page2.html
   |    |--cgi
   |    |    |--succ.json
-</pre>
+```
 
 <code>./src</code>  为开发目录，可以看到资源按照模块或者页面分得比较细<br>
 <code>./dist</code> 为生成目录，原型预览，和静态资源交付都在这个文件夹下。相比<code>./src</code>目录，多了<code>static/images</code>和<code>static/fonts</code>以及<code>views/cgi</code>文件夹，分别放置图片资源、字体资源和ajax请求页面。因为这些资源不参与node任务，因此，直接安排在<code>./dist</code>目录下，省去拷贝的成本。
@@ -172,26 +172,34 @@ body {!;
 
 html文件支持模块导入，采用html5 <code>import</code>语法，例如：
 
-<pre>&lt;link rel="import" href="./include/header.html?nav1=active"&gt;</pre>
+```html
+<link rel="import" href="./include/header.html?nav1=active">
+```
 
 “魔卡”会将<code>"./include/header.html"</code>这个文件内容直接引入进来，类似php中的<code>include</code>功能。
 
 #### HTML编译支持简易查询
 
 “魔卡”的HTML编译支持通过URL查询字符串向引入的模块传递参数，不过功能比较单一，就是替换，例如：
-<pre>&lt;link rel="import" href="./include/header.html?nav2=active"&gt;</pre>
+```html
+<link rel="import" href="./include/header.html?nav2=active">
+```
 
 这里的<code>nav2=active</code>就会替换header.html中的<code>$nav2$</code>为字符<code>'active'</code>。
 
 header.html原始HTML为：
-<pre>&lt;h3&gt;&lt;a href="./index.html" class="nav-a $nav1$"&gt;首页&lt;/a&gt;&lt;/h3&gt;
-&lt;h3&gt;&lt;a href="./page1.html" class="nav-a $nav2$"&gt;页面1&lt;/a&gt;&lt;/h3&gt;
-&lt;h3&gt;&lt;a href="./page2.html" class="nav-a $nav3$"&gt;页面2&lt;/a&gt;&lt;/h3&gt;</pre>
+```html
+<h3><a href="./index.html" class="nav-a $nav1$">首页</a></h3>
+<h3><a href="./page1.html" class="nav-a $nav2$">页面1</a></h3>
+<h3><a href="./page2.html" class="nav-a $nav3$">页面2</a></h3>
+```
 
 HTML模块引入后就是：
-<pre>&lt;h3&gt;&lt;a href="./index.html" class="nav-a "&gt;首页&lt;/a&gt;&lt;/h3&gt;
-&lt;h3&gt;&lt;a href="./page1.html" class="nav-a active"&gt;页面1&lt;/a&gt;&lt;/h3&gt;
-&lt;h3&gt;&lt;a href="./page2.html" class="nav-a "&gt;页面2&lt;/a&gt;&lt;/h3&gt;</pre>
+```html
+<h3><a href="./index.html" class="nav-a ">首页</a></h3>
+<h3><a href="./page1.html" class="nav-a active">页面1</a></h3>
+<h3><a href="./page2.html" class="nav-a ">页面2</a></h3>
+```
 
 于是，当我们点击导航切换到“页面1”的时候会发现导航按钮一起跟着高亮了，就是上面<code>nav2=active</code>的作用，如下图：
 
@@ -214,7 +222,9 @@ HTML模块引入后就是：
 
 “魔卡”本地服务端口采用的是本地年份：
 
-<pre>let port = new Date().getFullYear();</pre>
+```javascript
+let port = new Date().getFullYear();
+```
 
 因此，访问地址以 http://127.0.0.1:2017 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，可以修改port端口值。
 
@@ -247,16 +257,20 @@ HTML模块引入后就是：
 #### 1. 走表单 
 
 如下：
-<pre>&lt;form action="./cgi/getMessageData.json" method="get"&gt;
-    &lt;input type="hidden" name="type" value="message"&gt;
-&lt;/form&gt;</pre>
-
+```html
+<form action="./cgi/getMessageData.json" method="get">
+    <input type="hidden" name="type" value="message">
+</form>
+```
 
 对于原型页面，CSS，JS以及图片等是前端的；HTML页面是开发的，HTML页面上的动态信息的改动是不会影响到前端的。
 
 例如这里<code>action</code>就是和后端约定的接口地址，至于具体是什么，前端无需关心，只要我自己原型跑得通就可以，开发到时候替换成真实请求地址就好了；<code>name</code>属性值<code>type</code>就是接口数据需要的字段，开发觉得不满意，自己改掉就好了，随便改；如果发现还需要其他数据，再自己加一个<code>&lt;input&gt;</code>框就好了，例如加个用户id，直接<code>&lt;form&gt;</code>元素中再塞入一个：
 
-<pre>&lt;input type="hidden" name="userid" value="10001"&gt;</pre>
+
+```html
+<input type="hidden" name="userid" value="10001">
+```
 
 #### 2. HTML模板
 
@@ -268,21 +282,29 @@ HTML模板字符放置在页面上，不要内联到JavaScript中，这样，开
 
 这个通常用在独立的按钮上，例如收藏某一个作品。最好么走<code>&lt;form&gt;</code>，如果觉得啰嗦，也可以类似下面这样：
 
-<pre>&lt;a href="javascript:" role="button" data-url="./cgi/fav.json" data-params="id=1&amp;action=add"&gt;删除&lt;/a&gt;</pre>
+```html
+<a href="javascript:" role="button" data-url="./cgi/fav.json" data-params="id=1&action=add">删除</a>
+   ```
 
 <code>data-url</code>就是接口地址，<code>data-params</code>中放置需要数据字段。如果是get请求，还请求字段还可以直接放在<code>data-url</code>中，例如：
-<pre>&lt;a href="javascript:" role="button" data-url="./cgi/getData.json?id=1&amp;page=2"&gt;删除&lt;/a&gt;</pre>
+```html
+<a href="javascript:" role="button" data-url="./cgi/getData.json?id=1&page=2">删除</a>
+```
 
 #### 4. JS初始化暴露
 
 在每个页面底部通过JS接口，或者全局参数暴露请求地址，例如：
 
-<pre>HOME.cgi.postUrl = '../cgi/succ.json';
-HOME.init();</pre>
+```javascript
+HOME.cgi.postUrl = '../cgi/succ.json';
+HOME.init();
+```
 
-<pre>var G_DATA = {
+```javascript
+var G_DATA = {
     postUrl: '../cgi/succ.json'
-};</pre>
+};
+```
 
 通过上面4中方式的处理，即使你在钓鱼，也不要担心开发同学进行不下去，因为JavaScript脚本中都是干干净净的交互逻辑，凡是开发同学需要的东西都在页面上。
 
