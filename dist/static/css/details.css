@@ -6,12 +6,10 @@
  * @create 17-12-14
  * @description 主页相关样式
 **/
-
 .home-p {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-
 .home-p > button {
     width: 120px;
     height: 30px;
@@ -24,7 +22,6 @@
  * @create 17-12-14
  * @description 子页1相关样式
 **/
-
 @charset "UTF-8";
 /**
  *
@@ -33,7 +30,6 @@
  * @create 17-12-14
  * @description 子页2相关样式
 **/
-
 /* 下面为测试代码 */
 .class-a {
     width: 100px;

@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+@import '../_variable.css';
+
 .header {
     height: 60px;
 }
@@ -15,7 +17,7 @@
 }
 
 .nav {
-    background-color: #56a8fe;
+    background-color: var(--blue);
     overflow: hidden;
 }
 .nav-a {
@@ -24,7 +26,7 @@
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
-    color: #fff;
+    color: var(--white);
 }
 .nav-a:hover,
 .nav-a.active {
@@ -32,10 +34,10 @@
 }
 
 .footer {
-    background-color: #56a8fe;
+    background-color: var(--blue);
 }
 .footer-p {
-    color: #fff;
+    color: var(--white);
     text-align: center;
     padding-top: 20px;
     padding-bottom: 20px;

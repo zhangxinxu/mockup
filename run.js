@@ -6,7 +6,7 @@
 	魔卡——高保真原型交付Node.js工具，主要功能：
 	1. HTML import功能，头部和尾部可以公用啦
 	2. 基于文件夹的CSS和JS资源合并策略
-	3. [本项已移除]支持qcss快速书写，变量以及@import模块引入
+	3. [本项已移除]支持qcss快速书写，[直接CSS文件支持]变量以及@import模块引入
 	4. 本地http环境一键开启，post/get请求轻松模拟
  * @url https://github.com/zhangxinxu/mockup
  * @license MIT 保留原作者和原出处
@@ -32,15 +32,24 @@ const combo = function (arrUrls, strUrl, filter) {
 	if (arrUrls && arrUrls.length && strUrl) {
 		arrUrls.forEach(function (url) {
 			let st = fs.statSync(url);
-			if (st.isFile()) {
-				// 如果是文件
-				content += fs.readFileSync(url);
+			let filedata = '';
+			if (st.isFile() && /^_/.test(path.basename(url)) == false) {
+				// 如果是文件，且不是下划线开头
+				filedata = fs.readFileSync(url, 'utf8');
+				if (/\.css$/.test(url)) {
+					filedata = qCss(url, filedata);
+				}
+				content += filedata;
 			} else if (st.isDirectory()) {
 				// 作为文件夹
 				fs.readdirSync(url).forEach(function (filename) {
 					let dir = path.join(url, filename);
-					if (fs.statSync(dir).isFile()) {
-						content += fs.readFileSync(dir);
+					if (fs.statSync(dir).isFile() && /^_/.test(filename) == false) {
+						filedata = fs.readFileSync(dir, 'utf8');
+						if (/\.css$/.test(filename)) {
+							filedata = qCss(url, filedata);
+						}
+						content += filedata;
 					}
 				});
 			}
@@ -228,6 +237,78 @@ const compile = function (src, dist) {
 	});
 };
 
+/*
+** qCss CSS @import导入，以及变量处理
+** @params src 当前CSS文件所在路径
+** @params data 字符数据
+*/
+let qCss = function (src, data) {
+	if (typeof data != 'string') {
+		console.error('data数据格式不对，原路返回');
+		return data;
+	}
+	// @import处理
+	data = data.replace(/@import\s+([\w\W]*?);/g, function (matchs, url) {
+		// 过滤引号，括号，或者url等
+		url = url.replace(/url|\'|\"|\(|\)/g, '');
+		// 判断qcss文件是否有
+		var pathImportCss = path.join(src, url);
+
+		if (!fs.existsSync(pathImportCss)) {
+			console.error(pathImportCss + '文件不存在，忽略这段引入');
+			return '/* '+ matchs +' */';
+		}
+		// 替换成对应文件内容
+		return fs.readFileSync(pathImportCss);
+	});
+
+	// 计算出文件中设置CSS变量
+	// 只支持:root, html, body{}中的变量设置
+	var valueMapCustom = {};
+
+	data = data.replace(/(?:\:root|html|body)\s*\{([\w\W]*?)\}/g, function (matchs, $1) {
+		var isReplaced = false;
+		$1.split(';').forEach(function (parts) {
+			if (parts.trim() == '!') {
+				isReplaced = true;
+				return;
+			}
+	  		if (parts.split(/:/).length == 2) {
+				var keyValue = parts.split(/:/);
+				if (keyValue[1].trim() && keyValue[0].trim()) {
+		  			valueMapCustom[keyValue[0].trim()] = keyValue[1].trim();
+				}
+	  		}
+		});
+
+		// 设置了!;标示的声明块直接删除，不保留
+		if (isReplaced) {
+			return '';
+		}
+
+		return matchs;
+	});
+	// 替换var()中的变量设置
+  	data = data.replace(/\{([\w\W]*?)\}/g, function (matchs, $1) {
+  		return matchs.replace($1, $1.split(';').map(function (state) {
+  			if (/:/.test(state) == false || /var\(--.*\)/.test(state) == false) {
+  				return state;
+  			}
+  			// var(--blue, #000)
+  			return state.replace(/var\(([\w\W]*?)\)/, function (varMatchs, $var1) {
+  				let keyVar = $var1.split(',')[0].trim();
+  				let backupVar = $var1.split(',')[1];
+  				if (backupVar) {
+  					backupVar = backupVar.trim() || 'initial';
+  				}
+
+  				return valueMapCustom[keyVar] || backupVar || 'initial';
+  			});
+  		}).join(';'));
+  	});
+
+  	return data.replace(/\n+/g, '\n');
+};
 
 const pathSrcCSS = './src/static/css/';
 const pathDistCSS = './dist/static/css/';
@@ -250,7 +331,8 @@ const task = {
 			fs.readdirSync(pathSrcCSS).forEach(function (filename) {
 				let cssPath = path.join(pathSrcCSS, filename);
 				let st = fs.statSync(cssPath);
-				if (st.isFile() && /\.css$/.test(filename)) {
+				// 下划线开头的CSS文件不处理
+				if (st.isFile() && /\.css$/.test(filename) && /^_/.test(filename) == false) {
 					// 转移
 					fs.writeFileSync(path.join(pathDistCSS, filename), fs.readFileSync(cssPath, {
 						encoding: 'utf8'

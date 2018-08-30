@@ -7,6 +7,10 @@
  * @description 主页相关样式
 **/
 
+body {!;
+    --borderRadius: 2px;
+}
+
 .home-p {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -15,5 +19,5 @@
 .home-p > button {
     width: 120px;
     height: 30px;
-    border-radius: 2px;
+    border-radius: var(--borderRadius);
 }

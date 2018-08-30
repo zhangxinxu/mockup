@@ -6,7 +6,6 @@
     opacity: 1;
 }
 }
-
 @keyframes spin {
   from {
         transform: rotate(0);
@@ -16,94 +15,67 @@
 }
 }
 @charset "UTF-8";
-/**
-$blue = #56a8fe;
-$dark = #454852;
-$blueHover = #549deb;
-$gray = #989da3;
-$white = #fff;
-$green = #01cf97;
-$orange = #ffa05c;
-$red = #f4615c;
-$light = #f7f9fa;
-**/
-
 
 /*主色*/
 body {
-    color: dark;
+    color: #454852;
 }
-
 .dark {
-    color: dark;
+    color: #454852;
 }
-
 a {
     color: inherit;
 }
-
 .black {
-    color: black;
+    color: #000;
 }
-
 /*蓝色*/
 .blue, a.dark:hover {
     color: blue;
 }
-
 /*hover蓝色*/
 a.blue:hover {
-    color: blurHover;
+    color: #549deb;
 }
-
 /*灰色*/
 .gray {
-    color: gray;
+    color: #989da3;
 }
-
 /*白色*/
 .white {
-    color: white;
+    color: #fff;
 }
-
 /* 绿色 */
 .green {
-    color: green;
+    color: #01cf97;
 }
-
 /* 橘色 */
 .orange {
-    color: orange;
+    color: #ffa05c;
 }
-
 /* 红色 */
 .red {
-    color: red;
+    color: #f4615c;
 }
-
 /* 浅色 */
 .light {
-    color: light;
+    color: #f7f9fa;
 }
-
 @charset "UTF-8";
 
 .header {
     height: 60px;
 }
-
 .logo {
     padding-top: 15px;
     font-size: 20px;
 }
-
 .constr {
     max-width: 960px;
     margin: auto;
 }
-
 .nav {
-    background-color: #56a8fe;
+    background-color: initial;
     overflow: hidden;
 }
 .nav-a {
@@ -118,9 +90,8 @@ a.blue:hover {
 .nav-a.active {
     background-color: rgba(0, 0, 0, .1);
 }
-
 .footer {
-    background-color: #56a8fe;
+    background-color: initial;
 }
 .footer-p {
     color: #fff;
@@ -128,7 +99,6 @@ a.blue:hover {
     padding-top: 20px;
     padding-bottom: 20px;
 }
-
 .content {
     min-height: 600px;
     padding-top: 20px;
@@ -144,64 +114,50 @@ a.blue:hover {
 .dn {
     display: none;
 }
-
 .di {
     display: inline;
 }
-
 .db {
     display: block;
 }
-
 .dib {
     display: inline-block;
 }
-
 /* font-style */
 .n {
     font-weight: normal;
     font-style: normal;
 }
-
 .b {
     font-weight: bold;
 }
-
 .i {
     font-style: italic;
 }
-
 /* text-align */
 .tc {
     text-align: center;
 }
-
 .tr {
     text-align: right;
 }
-
 .tl {
     text-align: left;
 }
-
 .tj {
     text-align: justify;
 }
-
 /* text-decoration */
 .tdl {
     text-decoration: underline;
 }
-
 .tdn, .tdn:hover, .tdn a:hover, a.tdl:hover {
     text-decoration: none;
 }
-
 /* white-space */
 .nowrap {
     white-space: nowrap;
 }
-
 /* word-wrap */
 .bk {
     word-wrap: break-word;
@@ -209,70 +165,54 @@ a.blue:hover {
 .ba {
     word-break: break-all;
 }
-
 /* vertical-align */
 .vm {
     vertical-align: middle;
 }
-
 .vb {
     vertical-align: bottom;
 }
-
 .vt {
     vertical-align: top;
 }
-
 .vn {
     vertical-align: -5px;
 }
-
 /*float*/
 .l {
     float: left;
 }
-
 .r {
     float: right;
 }
-
 /* clear */
 .cl {
     clear: both;
 }
-
 /* position */
 .rel {
     position: relative;
 }
-
 .abs {
     position: absolute;
 }
-
 /* overflow */
 .ovh {
     overflow: hidden;
 }
-
 .ova {
     overflow: auto;
 }
-
 /* visibility */
 .vh {
     visibility: hidden;
 }
-
 .vv {
     visibility: visible;
 }
-
 .up {
     text-transform: uppercase;
 }
-
-
 /* ---------------------multiple CSS----------------------- */
 /* 清除浮动*/
 .fix:after {
@@ -280,32 +220,27 @@ a.blue:hover {
     content: '';
     clear: both;
 }
-
 /* 基于display:table-cell的自适应布局 */
 .cell {
     display: table-cell;
     width: 2000px;
 }
-
 /* 单行文字溢出虚点显示 */
 .ell {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
-
 /* 可响应focus/click的隐藏 */
 .clip {
     position: absolute;
     clip: rect(0 0 0 0);
 }
-
 /* 块状元素水平居中 */
 .auto {
     margin-left: auto;
     margin-right: auto;
 }
-
 /* 大小不定元素垂直居中 */
 .middle {
     display: inline-block;
@@ -313,13 +248,11 @@ a.blue:hover {
     height: 100%;
     vertical-align: middle;
 }
-
 /* transition过渡 */
 .trans {
     -webkit-transition: all 250ms;
     transition: all 250ms;
 }
-
 /* 文字无法选中 */
 .unselect {
     -webkit-user-select: none;
@@ -327,7 +260,6 @@ a.blue:hover {
     -ms-user-select: none;
     user-select: none;
 }
-
 /* disabled */
 .disabled {
     opacity: .4;
@@ -337,38 +269,31 @@ a.blue:hover {
     pointer-events: none;
 }
 @charset "UTF-8";
-
 body {
     font-family: sans-serif;
     line-height: 1.5;
     fill: currentColor;
 }
-
 h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
     margin: 0;
     font-weight: 400;
 }
-
 body, form, ul, ol, dl, dd, p {
     margin: 0;
 }
-
 ul, ol {
     list-style-type: none;
     padding: 0;
 }
-
 img {
     border: 0 none;
     vertical-align: bottom;
 }
-
 button, input, select, textarea {
     font-size: 1em;
     font-family: inherit;
 }
-
 a, a:hover {
     text-decoration: none;
 }

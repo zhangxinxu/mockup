@@ -1,24 +1,15 @@
 @charset "UTF-8";
-/**
-$blue = #56a8fe;
-$dark = #454852;
-$blueHover = #549deb;
-$gray = #989da3;
-$white = #fff;
-$green = #01cf97;
-$orange = #ffa05c;
-$red = #f4615c;
-$light = #f7f9fa;
-**/
+
+@import url(../_variable.css);
 
 
 /*主色*/
 body {
-    color: dark;
+    color: var(--dark, #333);
 }
 
 .dark {
-    color: dark;
+    color: var(--dark, #333);
 }
 
 a {
@@ -26,46 +17,46 @@ a {
 }
 
 .black {
-    color: black;
+    color: var(--black, #000);
 }
 
 /*蓝色*/
 .blue, a.dark:hover {
-    color: blue;
+    color: var(--blue, blue);
 }
 
 /*hover蓝色*/
 a.blue:hover {
-    color: blurHover;
+    color: var(--blueHover);
 }
 
 /*灰色*/
 .gray {
-    color: gray;
+    color: var(--gray, gray);
 }
 
 /*白色*/
 .white {
-    color: white;
+    color: var(--white, white);
 }
 
 /* 绿色 */
 .green {
-    color: green;
+    color: var(--green, green);
 }
 
 /* 橘色 */
 .orange {
-    color: orange;
+    color: var(--orange, orange);
 }
 
 /* 红色 */
 .red {
-    color: red;
+    color: var(--red, red);
 }
 
 /* 浅色 */
 .light {
-    color: light;
+    color: var(--light, #f5f5f5);
 }
 
