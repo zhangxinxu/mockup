@@ -34,7 +34,7 @@
 
 * HTML import功能，头部和尾部可以公用啦
 * 基于文件夹的CSS和JS资源合并策略
-* <del>支持qcss快速书写，变量以及@import模块引入</del>
+* 支持CSS变量以及@import模块引入</del>
 * 本地http环境一键开启，post/get请求轻松模拟
 
 Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlpreview.github.io/?https://github.com/zhangxinxu/mockup/blob/master/dist/views/html/)
@@ -115,9 +115,47 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 
 ## “魔卡”深入介绍
 
-### 1. 关于qcss
+### 1. 关于CSS编译
 
-作者补充：经过实践发现，qcss对于效率的提升没有预想的高，反而增加了额外的学习成本和工具复杂度（虽然设计的时候支持不使用），于是，现在直接移除了qcss。
+经过实践发现，原来的qcss对于效率的提升没有预想的高，反而增加了额外的学习成本和工具复杂度（虽然设计的时候支持不使用），于是，现在直接移除了qcss。
+
+但是，模块引入和CSS变量是无辜的，被移除是不合适的，于是加以改造，直接基于`.css`后缀文件进行编译，具体如下：
+
+#### @import功能
+
+下面两种引入方法都是支持的：
+
+```css
+@import '../_variable.css';
+```
+
+```css
+@import url('../_variable.css');
+```
+
+仅支持一层关系import，多层关系不支持，例如a import b, b import c，则a文件编译时候，c是不会嵌套进来的。
+
+#### CSS变量
+
+CSS变量采用原生的CSS语法，也就是`--varname: value`声明变量，然后`var(--varname)`使用变量，具体可参见“<a href="https://www.zhangxinxu.com/wordpress/2016/11/css-css3-variables-var/">了解CSS/CSS3原生变量var</a>”这篇文章。
+
+但是，细节上有差异，包括：
+
+* 只支持`:root{}`，`html{}`，`body{}`中的CSS变量声明；
+* 不支持CSS变量嵌套声明；
+
+另外，为了避免和原生需要的CSS变量冲突，建议在语句块中加上`!;`进行区分，本工具在编译时候会过滤这段声明。例如：
+
+```css
+body {!;
+    --borderRadius: 2px;
+}
+```
+
+#### 其他
+
+文件名以`_`下划线开头的CSS文件不会参与编译与合并，只能被@import导入。
+
 
 ### 2. 关于合并
 
