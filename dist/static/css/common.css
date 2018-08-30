@@ -15,7 +15,6 @@
 }
 }
 @charset "UTF-8";
-
 /*主色*/
 body {
     color: #454852;
@@ -62,7 +61,6 @@ a.blue:hover {
     color: #f7f9fa;
 }
 @charset "UTF-8";
-
 .header {
     height: 60px;
 }

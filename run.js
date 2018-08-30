@@ -307,7 +307,7 @@ let qCss = function (src, data) {
   		}).join(';'));
   	});
 
-  	return data.replace(/\n+/g, '\n');
+  	return data.replace(/[\r\n]+/g, '\n');
 };
 
 const pathSrcCSS = './src/static/css/';
@@ -510,7 +510,7 @@ let server = http.createServer(function (request, response) {
 //设置监听端口
 let port = new Date().getFullYear();
 server.listen(port, '127.0.0.1', function () {
-	console.log('服务已经启动，访问地址为：http://127.0.0.1:'+ port +'/views/html/index.html');
+	console.log('服务已经启动，访问地址为：\nhttp://127.0.0.1:'+ port +'/views/html/index.html');
 });
 
 
