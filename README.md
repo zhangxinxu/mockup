@@ -37,7 +37,7 @@
 * 支持CSS变量以及@import模块引入</del>
 * 本地http环境一键开启，post/get请求轻松模拟
 
-Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlpreview.github.io/?https://github.com/zhangxinxu/mockup/blob/master/dist/views/html/)
+Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlpreview.github.io/?https://github.com/zhangxinxu/mockup/blob/master/dist/views/html/index.html)
 
 ### 如何使用？
 
