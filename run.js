@@ -251,7 +251,7 @@ let qCss = function (src, data) {
 	data = data.replace(/@import\s+([\w\W]*?);/g, function (matchs, url) {
 		// 过滤引号，括号，或者url等
 		url = url.replace(/url|\'|\"|\(|\)/g, '');
-		// 判断qcss文件是否有
+		// 判断css文件是否有
 		var pathImportCss = path.join(src, url);
 
 		if (!fs.existsSync(pathImportCss)) {
@@ -505,7 +505,8 @@ let server = http.createServer(function (request, response) {
 	});
 });
 
-//设置监听端口
+// 设置监听端口
+// 你可以自定义，否则会使用当前年份作为端口号
 let port = new Date().getFullYear();
 server.listen(port, '127.0.0.1', function () {
 	console.log('服务已经启动，访问地址为：\nhttp://127.0.0.1:'+ port +'/views/html/index.html');

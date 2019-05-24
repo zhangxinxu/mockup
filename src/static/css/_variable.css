@@ -1,11 +1,17 @@
-:root {!; /*!;表示这段申明编译后无需保留*/
-    --blue: #56a8fe;
-    --dark: #454852;
-    --blueHover: #549deb;
-    --gray: #989da3;
+/**
+ * 如果你项目需要使用原生的CSS变量，
+ * 请写在 ./common/variable.css中
+ * 这里CSS变量会重复引入，且不会保留（通过设置!;）
+ * 这里适合需要兼容IE浏览器的项目
+*/
+:root {!; /*!;表示这段CSS变量声明在编译后无需保留*/
+    --blue: #2486ff;
+    --dark: #4c5161;
+    --blueHover: #0057c3;
+    --gray: #a2a9b6;
     --white: #fff;
     --green: #01cf97;
-    --orange: #ffa05c;
+    --orange: #f28c48;
     --red: #f4615c;
     --light: #f7f9fa;
 }
