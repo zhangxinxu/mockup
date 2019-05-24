@@ -103,12 +103,15 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
   |    |    |--page2.html
   |    |--cgi
   |    |    |--succ.json
+./map.html             -> 地图和项目进度页面
 ```
 
-<code>./src</code>  为开发目录，可以看到资源按照模块或者页面分得比较细<br>
-<code>./dist</code> 为生成目录，原型预览，和静态资源交付都在这个文件夹下。相比<code>./src</code>目录，多了<code>static/images</code>和<code>static/fonts</code>以及<code>views/cgi</code>文件夹，分别放置图片资源、字体资源和ajax请求页面。因为这些资源不参与node任务，因此，直接安排在<code>./dist</code>目录下，省去拷贝的成本。
+* <code>./src</code> 为开发目录，可以看到资源按照模块或者页面分得比较细<br>
+* <code>./dist</code> 为生成目录，原型预览，和静态资源交付都在这个文件夹下。相比<code>./src</code>目录，多了<code>static/images</code>和<code>static/fonts</code>以及<code>views/cgi</code>文件夹，分别放置图片资源、字体资源和ajax请求页面。因为这些资源不参与node任务，因此，直接安排在<code>./dist</code>目录下，省去拷贝的成本。
+* <code>./map.html</code> 是项目页面地图以及项目进度完成视觉化页面，可以让Leader和项目组一看看出目前进度。效果图示意：
+![地图和进度](https://qidian.qpic.cn/qidian_common/349573/e86b91d6a2e49655e15201f813604eb4/0)
 
-一些说明：
+**一些说明：**
 
 * 上面文件目录结构中，<code>./src</code>中的css, js, html等目录名称和层级是不能调整的，否则会跑不起来。如果进行了修改，需要同步修改run.js相关路径。
 * css, js及其以下子目录，目前仅支持1级文件夹结构，名称可以任意，例如page1.js, page2.js都是示意用，您可以删除或者改成你需要的名称。
@@ -117,9 +120,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 
 ### 1. 关于CSS编译
 
-经过实践发现，原来的qcss对于效率的提升没有预想的高，反而增加了额外的学习成本和工具复杂度（虽然设计的时候支持不使用），于是，现在直接移除了qcss。
-
-但是，模块引入和CSS变量是无辜的，被移除是不合适的，于是加以改造，直接基于`.css`后缀文件进行编译，具体如下：
+支持简单的模块引入和CSS变量编译，具体如下：
 
 #### @import功能
 
@@ -134,6 +135,8 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 ```
 
 仅支持一层关系import，多层关系不支持，例如a import b, b import c，则a文件编译时候，c是不会嵌套进来的。
+
+毕竟写静态页面原型，不需要太复杂的结构。
 
 #### CSS变量
 
@@ -166,7 +169,7 @@ body {!;
   其中，有一个例外，那就是<code>lib</code>文件夹下的JS是不参与合并的，通常用来放置JS框架，例如jquery, zepto之类。
 * <code>./src/static/css</code>下所有1级文件夹中的CSS会合并为和文件夹同命名的独立文件。例如，<code>.src/static/js/details</code>文件夹下有<code>home.css</code>，<code>page1.css</code>和<code>page2.css</code>，结果“魔卡”运行后通通合并成了<code>details.css</code>，在<code>./dist/static/css</code>目录下。同样的，直接直接暴露在<code>./src/static/css</code>下的css文件是不参与合并的。
 
-合并不支持多级目录，个人经验，很少项目会用到超过2级的CSS, JS资源。于是就省电点，工具层面约束项目复杂度，使结构更加扁平。
+合并不支持多级目录，个人经验，很少项目会用到超过2级的CSS, JS资源。于是就简单点，工具层面约束项目复杂度，使结构更加扁平。
 
 ### 3. 关于HTML编译
 
@@ -228,6 +231,10 @@ let port = new Date().getFullYear();
 
 因此，访问地址以 http://127.0.0.1:2017 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，可以修改port端口值。
 
+<hr>
+
+接下来内容与本工具关联不大，主要分享如何实现更好的静态原型页面。
+
 ## 前端和后端工作分离策略
 
 通常项目开发，我们总会搭建一个和线上环境几乎类似的本地环境，ajax请求地址等等和线上都是一模一样的，唯一不同的就是域名（甚至通过host修改域名都是一样的），这样，JS中的ajax地址就能无缝上线。
@@ -253,8 +260,8 @@ let port = new Date().getFullYear();
 2. 模板以HTML形式呈现；
 3. 特殊场景使用<code>data-*</code>；
 4. 页面底部JS初始化暴露动态参数。
-  
-#### 1. 走表单 
+
+#### 1. 走表单
 
 如下：
 ```html
