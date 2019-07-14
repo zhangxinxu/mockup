@@ -45,7 +45,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 2. 安装[node.js](https://nodejs.org/zh-cn/)
 3. 命令行node run。windows系统可以双击run.bat。
 
-此时“魔卡”就开启了本地服务，http://127.0.0.1:2017/views/html/*.html 访问（127.0.0.1也可以替换成localhost）。这里2017是可变的，是基于当前年份设置的。
+此时“魔卡”就开启了本地服务，http://127.0.0.1:2019/views/html/*.html 访问（127.0.0.1也可以替换成localhost）。这里2019是可变的，是基于当前年份设置的。
 
 同时，全面监控HTML，CSS和JS资源。
 
@@ -229,7 +229,7 @@ HTML模块引入后就是：
 let port = new Date().getFullYear();
 ```
 
-因此，访问地址以 http://127.0.0.1:2017 或者 http://localhost:2017 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，需要你修改run.js中的port端口值。
+因此，访问地址以 http://127.0.0.1:2019 或者 http://localhost:2019 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，需要你修改run.js中的port端口值。
 
 <hr>
 
