@@ -2,13 +2,20 @@
 
 @import '../_variable.css';
 
+/**
+ * @description 页面结构公用CSS，以下代码为原型页面示意CSS，实际项目请删除，用不到
+ */
+
 .header {
     height: 60px;
 }
 
 .logo {
-    padding-top: 15px;
-    font-size: 20px;
+    width: 200px;
+    height: 60px;
+    font-size: 0;
+    background: url(../images/logo.png) no-repeat left;
+    background-size: contain;
 }
 
 .constr {
@@ -33,6 +40,13 @@
     background-color: rgba(0, 0, 0, .1);
 }
 
+.content {
+    min-height: 600px;
+    min-height: calc(100vh - 60px - 44px - 64px - 20px);
+    padding-top: 20px;
+    overflow: hidden;
+}
+
 .footer {
     background-color: var(--blue);
 }
@@ -41,9 +55,4 @@
     text-align: center;
     padding-top: 20px;
     padding-bottom: 20px;
-}
-
-.content {
-    min-height: 600px;
-    padding-top: 20px;
 }

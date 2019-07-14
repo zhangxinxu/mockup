@@ -2,7 +2,7 @@
 /**
  *
  * @lib.css
- * @author xinxuzhang
+ * @author zhangxinxu(.com)
  * @create 15-06-04
  */
 /* ---------------------single CSS----------------------- */
@@ -21,6 +21,18 @@
 
 .dib {
     display: inline-block;
+}
+
+.dt {
+    display: table;
+}
+
+.dtc {
+    display: table-cell;
+}
+
+.df {
+    display: flex;
 }
 
 /* line-height */
@@ -172,12 +184,30 @@
 .mb20 {
     margin-bottom: 20px;
 }
-.mb24 {
-    margin-bottom: 24px;
-}
 
 .mb30 {
     margin-bottom: 30px;
+}
+
+.ma {
+    margin: auto;
+}
+
+/* flex布局中子项对齐很有用 */
+.mla {
+    margin-left: auto;
+}
+
+.mra {
+    margin-right: auto;
+}
+
+.mta {
+    margin-top: auto;
+}
+
+.mba {
+    margin-bottom: auto;
 }
 
 /* padding */
@@ -434,11 +464,11 @@
 }
 
 /*float*/
-.l {
+.fl {
     float: left;
 }
 
-.r {
+.fr {
     float: right;
 }
 
@@ -487,7 +517,17 @@
     clear: both;
 }
 
-/* 基于display:table-cell的自适应布局 */
+/* table等分布局 .table > .dtc */
+.table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* 基于display:table-cell的自适应布局 
+ * 1. .l + .cell，两栏自适应
+ * 2. .dt > .cell，等宽自适应
+*/
 .cell {
     display: table-cell;
     width: 2000px;

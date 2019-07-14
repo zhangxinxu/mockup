@@ -1,5 +1,9 @@
 @charset "UTF-8";
 
+/**
+ * @description 简易常用CSS代码
+ */
+
 body {
     font-family: sans-serif;
     line-height: 1.5;
@@ -9,10 +13,9 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
     margin: 0;
-    font-weight: 400;
 }
 
-body, form, ul, ol, dl, dd, p {
+body, form, ul, ol, dl, dd, p, details {
     margin: 0;
 }
 
@@ -24,6 +27,10 @@ ul, ol {
 img {
     border: 0 none;
     vertical-align: bottom;
+}
+
+details, summary {
+    display: block;
 }
 
 button, input, select, textarea {

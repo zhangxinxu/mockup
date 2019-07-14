@@ -506,8 +506,10 @@ let server = http.createServer(function (request, response) {
 });
 
 // 设置监听端口
-// 你可以自定义，否则会使用当前年份作为端口号
+// 默认使用当前年份作为端口号
 let port = new Date().getFullYear();
+// 使用默认年份一次只能开启一个服务，因此你也可以自定义端口
+// let port = '2018';
 server.listen(port, '127.0.0.1', function () {
 	console.log('服务已经启动，访问地址为：\nhttp://127.0.0.1:'+ port +'/views/html/index.html');
 });
