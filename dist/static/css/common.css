@@ -73,12 +73,18 @@ a.blue:hover {
  * 这里CSS变量会重复引入，且不会保留（通过设置!;）
  * 这里适合需要兼容IE浏览器的项目
 */
+/**
+ * @description 页面结构公用CSS，以下代码为原型页面示意CSS，实际项目请删除，用不到
+ */
 .header {
     height: 60px;
 }
 .logo {
-    padding-top: 15px;
-    font-size: 20px;
+    width: 200px;
+    height: 60px;
+    font-size: 0;
+    background: url(../images/logo.png) no-repeat left;
+    background-size: contain;
 }
 .constr {
     max-width: 960px;
@@ -100,6 +106,12 @@ a.blue:hover {
 .nav-a.active {
     background-color: rgba(0, 0, 0, .1);
 }
+.content {
+    min-height: 600px;
+    min-height: calc(100vh - 60px - 44px - 64px - 20px);
+    padding-top: 20px;
+    overflow: hidden;
+}
 .footer {
     background-color: #2486ff;
 }
@@ -108,15 +120,11 @@ a.blue:hover {
     text-align: center;
     padding-top: 20px;
     padding-bottom: 20px;
-}
-.content {
-    min-height: 600px;
-    padding-top: 20px;
 }@charset "UTF-8";
 /**
  *
  * @lib.css
- * @author xinxuzhang
+ * @author zhangxinxu(.com)
  * @create 15-06-04
  */
 /* ---------------------single CSS----------------------- */
@@ -132,6 +140,15 @@ a.blue:hover {
 }
 .dib {
     display: inline-block;
+}
+.dt {
+    display: table;
+}
+.dtc {
+    display: table-cell;
+}
+.df {
+    display: flex;
 }
 /* line-height */
 .lh14 {
@@ -246,11 +263,24 @@ a.blue:hover {
 .mb20 {
     margin-bottom: 20px;
 }
-.mb24 {
-    margin-bottom: 24px;
-}
 .mb30 {
     margin-bottom: 30px;
+}
+.ma {
+    margin: auto;
+}
+/* flex布局中子项对齐很有用 */
+.mla {
+    margin-left: auto;
+}
+.mra {
+    margin-right: auto;
+}
+.mta {
+    margin-top: auto;
+}
+.mba {
+    margin-bottom: auto;
 }
 /* padding */
 .p0 {
@@ -445,10 +475,10 @@ a.blue:hover {
     vertical-align: -5px;
 }
 /*float*/
-.l {
+.fl {
     float: left;
 }
-.r {
+.fr {
     float: right;
 }
 /* clear */
@@ -486,7 +516,16 @@ a.blue:hover {
     content: '';
     clear: both;
 }
-/* 基于display:table-cell的自适应布局 */
+/* table等分布局 .table > .dtc */
+.table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+/* 基于display:table-cell的自适应布局 
+ * 1. .l + .cell，两栏自适应
+ * 2. .dt > .cell，等宽自适应
+*/
 .cell {
     display: table-cell;
     width: 2000px;
@@ -535,6 +574,9 @@ a.blue:hover {
     pointer-events: none;
 }
 @charset "UTF-8";
+/**
+ * @description 简易常用CSS代码
+ */
 body {
     font-family: sans-serif;
     line-height: 1.5;
@@ -543,9 +585,8 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
     margin: 0;
-    font-weight: 400;
 }
-body, form, ul, ol, dl, dd, p {
+body, form, ul, ol, dl, dd, p, details {
     margin: 0;
 }
 ul, ol {
@@ -555,6 +596,9 @@ ul, ol {
 img {
     border: 0 none;
     vertical-align: bottom;
+}
+details, summary {
+    display: block;
 }
 button, input, select, textarea {
     font-size: 1em;

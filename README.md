@@ -45,7 +45,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 2. 安装[node.js](https://nodejs.org/zh-cn/)
 3. 命令行node run。windows系统可以双击run.bat。
 
-此时“魔卡”就开启了本地服务，http://127.0.0.1:2017/views/html/*.html 访问。这里2017是可变的，是基于当前年份设置的。
+此时“魔卡”就开启了本地服务，http://127.0.0.1:2017/views/html/*.html 访问（127.0.0.1也可以替换成localhost）。这里2017是可变的，是基于当前年份设置的。
 
 同时，全面监控HTML，CSS和JS资源。
 
@@ -103,18 +103,18 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
   |    |    |--page2.html
   |    |--cgi
   |    |    |--succ.json
-./map.html             -> 地图和项目进度页面
+  |    |--map.html             -> 地图和项目进度页面
 ```
 
 * <code>./src</code> 为开发目录，可以看到资源按照模块或者页面分得比较细<br>
 * <code>./dist</code> 为生成目录，原型预览，和静态资源交付都在这个文件夹下。相比<code>./src</code>目录，多了<code>static/images</code>和<code>static/fonts</code>以及<code>views/cgi</code>文件夹，分别放置图片资源、字体资源和ajax请求页面。因为这些资源不参与node任务，因此，直接安排在<code>./dist</code>目录下，省去拷贝的成本。
-* <code>./map.html</code> 是项目页面地图以及项目进度完成视觉化页面，可以让Leader和项目组一看看出目前进度。效果图示意：
+* <code>./dist/views/map.html</code> 是项目页面地图以及项目进度完成视觉化页面，可以让Leader和项目组一看看出目前进度，访问地址（假设端口号是2019）是 http://localhost:2019/views/map.html 。效果图示意：
 ![地图和进度](https://qidian.qpic.cn/qidian_common/349573/e86b91d6a2e49655e15201f813604eb4/0)
 
 **一些说明：**
 
 * 上面文件目录结构中，<code>./src</code>中的css, js, html等目录名称和层级是不能调整的，否则会跑不起来。如果进行了修改，需要同步修改run.js相关路径。
-* css, js及其以下子目录，目前仅支持1级文件夹结构，名称可以任意，例如page1.js, page2.js都是示意用，您可以删除或者改成你需要的名称。
+* css, js及其以下子目录，目前**仅支持1级文件夹结构**，名称可以任意，例如page1.js, page2.js都是示意用，您可以删除或者改成你需要的名称。
 
 ## “魔卡”深入介绍
 
@@ -229,7 +229,7 @@ HTML模块引入后就是：
 let port = new Date().getFullYear();
 ```
 
-因此，访问地址以 http://127.0.0.1:2017 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，可以修改port端口值。
+因此，访问地址以 http://127.0.0.1:2017 或者 http://localhost:2017 开始，这就有一个问题，因为年份是固定的，所以，“魔卡”默认是不支持同时开多个本地服务的，如果想要同时开多个服务，需要你修改run.js中的port端口值。
 
 <hr>
 
@@ -258,7 +258,7 @@ let port = new Date().getFullYear();
 
 1. 走原生&lt;form&gt;表单；
 2. 模板以HTML形式呈现；
-3. 特殊场景使用<code>data-*</code>；
+3. 特殊场景使用<code>data-\*</code>；
 4. 页面底部JS初始化暴露动态参数。
 
 #### 1. 走表单
@@ -285,7 +285,7 @@ HTML模板字符放置在页面上，不要内联到JavaScript中，这样，开
 
 <img src="https://qidian.qpic.cn/qidian_common/349573/4ff605dc242cf76d0cd52d6f224d47d1/0" width="521" height="275">
 
-#### 3. data-*自定义
+#### 3. data-\*自定义
 
 这个通常用在独立的按钮上，例如收藏某一个作品。最好么走<code>&lt;form&gt;</code>，如果觉得啰嗦，也可以类似下面这样：
 
@@ -329,7 +329,6 @@ var G_DATA = {
 也就是，前提是，前端重构人员脑中要有根弦，哪些信息是动态的，必须要放在页面上，一定要清楚；否则，如果混在JavaScript中，那联调起来就麻烦了。
 
 换句话说，“魔卡”要想完全释放实战功力与前端和后端工作分离策略模切相关。
-
 
 当然，如果前端仅仅是写CSS，不写交互，这些鬼策略可以不用care，大家随意随意。不过我是建议前端把所有JS交互也接管，对自己成长和项目质量把控都有帮助。
 
