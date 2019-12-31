@@ -476,6 +476,10 @@ let server = http.createServer(function (request, response) {
 	var realPath = path.join('dist', pathname);
 	//console.log(realPath);
 	var ext = path.extname(realPath);
+	if (!ext) {
+    	realPath = path.join(realPath, 'index.html');
+    	ext = path.extname(realPath);
+    }
 	ext = ext ? ext.slice(1) : 'unknown';
 	fs.exists(realPath, function (exists) {
 		if (!exists) {
