@@ -44,6 +44,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 1. 下载项目zip包：[master.zip](https://github.com/zhangxinxu/mockup/archive/master.zip)
 2. 安装[node.js](https://nodejs.org/zh-cn/)
 3. 命令行node run。windows系统可以双击run.bat。
+4. [新]执行node build，支持给CSS和JS静态资源加版本号，便于发布使用。图片如有变化，自己手动加版本号。
 
 此时“魔卡”就开启了本地服务，http://127.0.0.1:2019/views/html/*.html 访问（127.0.0.1也可以替换成localhost）。这里2019是可变的，是基于当前年份设置的。
 
