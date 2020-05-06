@@ -220,7 +220,7 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
             // 静态url地址替换
             let urlStaticFrom = config.from;
 
-            let regUrl = /\s(?:href|src)="([\w\W]+?)"/g;
+            let regUrl = /(?:href|src)="([\w\W]+?)"/g;
 
             ['', 'oa', 'dev'].forEach(function (type) {
                 let dataBuild = data.replace(regUrl, function (matches, $1) {
