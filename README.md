@@ -34,8 +34,9 @@
 
 * HTML import功能，头部和尾部可以公用啦
 * 基于文件夹的CSS和JS资源合并策略
-* 支持CSS变量以及@import模块引入</del>
+* 支持CSS变量以及@import模块引入
 * 本地http环境一键开启，post/get请求轻松模拟
+* 支持给静态资源自动添加版本号
 
 Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlpreview.github.io/?https://github.com/zhangxinxu/mockup/blob/master/dist/views/html/index.html)
 
@@ -44,7 +45,7 @@ Demo演示，基于“魔卡”生成的原型页面：[index.html](http://htmlp
 1. 下载项目zip包：[master.zip](https://github.com/zhangxinxu/mockup/archive/master.zip)
 2. 安装[node.js](https://nodejs.org/zh-cn/)
 3. 命令行node run。windows系统可以双击run.bat。
-4. [新]执行node build，支持给CSS和JS静态资源加版本号，便于发布使用。图片如有变化，自己手动加版本号。
+4. [新]如果想要自动添加版本号，修改build.js中的config配置，然后执行node build，会自动给CSS和JS资源加版本号，便于发布使用。图片如有变化，自己手动加版本号。
 
 此时“魔卡”就开启了本地服务，http://127.0.0.1:2019/views/html/*.html 访问（127.0.0.1也可以替换成localhost）。这里2019是可变的，是基于当前年份设置的。
 
