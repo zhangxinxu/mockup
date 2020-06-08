@@ -8,10 +8,12 @@
  *              静态资源版本添加，以及简易的压缩功能实现
  * @url https://github.com/zhangxinxu/mockup
  * @license MIT 保留原作者和原出处
+ * @edited by littleLionGuoQing:  20-06-08 接口压缩
 */
 
 const fs = require('fs');
 const path = require('path');
+const request = require('request');
 
 /*
 ** 删除文件极其目录方法
@@ -127,6 +129,8 @@ const pathDistCSS = pathDistStatic + 'css/';
 const pathDistJS = pathDistStatic + 'js/';
 const pathDistHTML = './dist/views/html/';
 
+const urlMinify = 'http://yux.yuewen.com/minify/api/minify';
+
 // 这里配置静态域名隐射地址
 let config = {
     from: '../../static',
@@ -189,11 +193,54 @@ copy(pathDistStatic, pathBilidStatic);
 
                 // 新的版本文件创建
                 nameNew = filename.replace('.' + suffix, `.${jsonVersion[filename]}.${suffix}`);
-                fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
-                    encoding: 'utf8'
-                }, function () {
-                    console.log(nameNew + '发生变化，新版本生成成功！');
-                });
+                // js 创建及压缩
+                if (suffix === 'js') {
+                    request({
+                        url: urlMinify,
+                        method: "POST",
+                        json: true,
+                        headers: {
+                            "content-type": "application/json",
+                        },
+                        body: {
+                            type: 'js',
+                            code: dataCurrent,
+                        }
+                    }, function(error, response) {
+                        if (!error && response.body.code === 0) {
+                            dataCurrent = response.body.data.code;
+                            fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
+                                encoding: 'utf8'
+                            }, function () {
+                                console.log(nameNew + '发生变化，新版本生成成功！');
+                            });
+                        }
+                    });
+                }
+                // css 创建及压缩
+                if (suffix === 'css') {
+                    request({
+                        url: urlMinify,
+                        method: "POST",
+                        json: true,
+                        headers: {
+                            "content-type": "application/json",
+                        },
+                        body: {
+                            type: 'css',
+                            code: dataCurrent,
+                        }
+                    }, function(error, response) {
+                        if (!error && response.body.code === 0) {
+                            dataCurrent = response.body.data.code;
+                            fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
+                                encoding: 'utf8'
+                            }, function () {
+                                console.log(nameNew + '发生变化，新版本生成成功！');
+                            });
+                        }
+                    });
+                }
             } else {
                 console.log(filename + '没有变化，版本号保持不变');
             }
@@ -238,15 +285,29 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
                 });
 
                 // 简易HTML压缩
-                if (type != 'oa') {
-                    dataBuild = dataBuild.replace(/>\s+</g, '> <').replace(/>\s<\//g, '></');
-                }
-
-                // 于是生成新的HTML文件
-                fs.writeFile(path.join(pathBilid, type, filename), dataBuild, {
-                    encoding: 'utf8'
-                }, function () {
-                    console.log(`${filename} ${type}生成成功！`);
+                request({
+                    url: urlMinify,
+                    method: "POST",
+                    json: true,
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: {
+                        type: 'html',
+                        code: dataBuild,
+                    }
+                }, function(error, response) {
+                    if (!error && response.body.code === 0) {
+                        if (type != 'oa') {
+                            dataBuild = response.body.data.code;
+                        }
+                        // 于是生成新的HTML文件
+                        fs.writeFile(path.join(pathBilid, type, filename), dataBuild, {
+                            encoding: 'utf8'
+                        }, function () {
+                            console.log(`${filename} ${type}生成成功！`);
+                        });
+                    }
                 });
             });
         });
