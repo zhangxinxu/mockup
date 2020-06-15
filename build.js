@@ -193,54 +193,27 @@ copy(pathDistStatic, pathBilidStatic);
 
                 // 新的版本文件创建
                 nameNew = filename.replace('.' + suffix, `.${jsonVersion[filename]}.${suffix}`);
-                // js 创建及压缩
-                if (suffix === 'js') {
-                    request({
-                        url: urlMinify,
-                        method: "POST",
-                        json: true,
-                        headers: {
-                            "content-type": "application/json",
-                        },
-                        body: {
-                            type: 'js',
-                            code: dataCurrent,
-                        }
-                    }, function(error, response) {
-                        if (!error && response.body.code === 0) {
-                            dataCurrent = response.body.data.code;
-                            fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
-                                encoding: 'utf8'
-                            }, function () {
-                                console.log(nameNew + '发生变化，新版本生成成功！');
-                            });
-                        }
-                    });
-                }
-                // css 创建及压缩
-                if (suffix === 'css') {
-                    request({
-                        url: urlMinify,
-                        method: "POST",
-                        json: true,
-                        headers: {
-                            "content-type": "application/json",
-                        },
-                        body: {
-                            type: 'css',
-                            code: dataCurrent,
-                        }
-                    }, function(error, response) {
-                        if (!error && response.body.code === 0) {
-                            dataCurrent = response.body.data.code;
-                            fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
-                                encoding: 'utf8'
-                            }, function () {
-                                console.log(nameNew + '发生变化，新版本生成成功！');
-                            });
-                        }
-                    });
-                }
+                request({
+                    url: urlMinify,
+                    method: "POST",
+                    json: true,
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: {
+                        type: suffix,
+                        code: dataCurrent,
+                    }
+                }, function(error, response) {
+                    if (!error && response.body.code === 0) {
+                        dataCurrent = response.body.data.code;
+                        fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
+                            encoding: 'utf8'
+                        }, function () {
+                            console.log(nameNew + '发生变化，新版本生成成功！');
+                        });
+                    }
+                });
             } else {
                 console.log(filename + '没有变化，版本号保持不变');
             }
