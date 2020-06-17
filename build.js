@@ -13,7 +13,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const request = require('request');
+const http = require('http');
 
 /*
 ** 删除文件极其目录方法
@@ -129,7 +129,16 @@ const pathDistCSS = pathDistStatic + 'css/';
 const pathDistJS = pathDistStatic + 'js/';
 const pathDistHTML = './dist/views/html/';
 
-const urlMinify = 'http://yux.yuewen.com/minify/api/minify';
+// 压缩
+const opt = {
+    hostname: 'yux.yuewen.com',
+    port: '80',
+    method: 'POST',
+    path: '/minify/api/minify',
+    headers: {
+        "Content-Type": 'application/json',
+    }
+};
 
 // 这里配置静态域名隐射地址
 let config = {
@@ -193,27 +202,34 @@ copy(pathDistStatic, pathBilidStatic);
 
                 // 新的版本文件创建
                 nameNew = filename.replace('.' + suffix, `.${jsonVersion[filename]}.${suffix}`);
-                request({
-                    url: urlMinify,
-                    method: "POST",
-                    json: true,
-                    headers: {
-                        "content-type": "application/json",
-                    },
-                    body: {
-                        type: suffix,
-                        code: dataCurrent,
-                    }
-                }, function(error, response) {
-                    if (!error && response.body.code === 0) {
-                        dataCurrent = response.body.data.code;
-                        fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
-                            encoding: 'utf8'
-                        }, function () {
-                            console.log(nameNew + '发生变化，新版本生成成功！');
-                        });
-                    }
+
+                const data = JSON.stringify({
+                    type: suffix,
+                    code: dataCurrent
                 });
+                var body = '';
+
+                const req = http.request(opt, function (res) {
+                    res.setEncoding('utf8');
+                    res.on('data', function (data) {
+                        body += data;
+                    }).on('end', function () {
+                        body = JSON.parse(body);
+                        if (body.code === 0) {
+                            dataCurrent = body.data.code;
+                            fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
+                                encoding: 'utf8'
+                            }, function () {
+                                console.log(nameNew + '发生变化，新版本生成成功！');
+                            });
+                        }
+                    });
+                });
+                req.on('error', (e) => {
+                    console.error(`请求遇到问题: ${e.message}`);
+                });
+                req.write(data);
+                req.end();
             } else {
                 console.log(filename + '没有变化，版本号保持不变');
             }
@@ -257,31 +273,37 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
                     return matches;
                 });
 
-                // 简易HTML压缩
-                request({
-                    url: urlMinify,
-                    method: "POST",
-                    json: true,
-                    headers: {
-                        "content-type": "application/json",
-                    },
-                    body: {
-                        type: 'html',
-                        code: dataBuild,
-                    }
-                }, function(error, response) {
-                    if (!error && response.body.code === 0) {
-                        if (type != 'oa') {
-                            dataBuild = response.body.data.code;
-                        }
-                        // 于是生成新的HTML文件
-                        fs.writeFile(path.join(pathBilid, type, filename), dataBuild, {
-                            encoding: 'utf8'
-                        }, function () {
-                            console.log(`${filename} ${type}生成成功！`);
-                        });
-                    }
+                // HTML压缩
+                const dataHTML = JSON.stringify({
+                    type: 'html',
+                    code: dataBuild
                 });
+                var body = '';
+
+                const req = http.request(opt, function (res) {
+                    res.setEncoding('utf8');
+                    res.on('data', function (data) {
+                        body += data;
+                    }).on('end', function () {
+                        body = JSON.parse(body);
+                        if (body.code === 0) {
+                            if (type != 'oa') {
+                                dataBuild = body.data.code;
+                            }
+                            // 于是生成新的HTML文件
+                            fs.writeFile(path.join(pathBilid, type, filename), dataBuild, {
+                                encoding: 'utf8'
+                            }, function () {
+                                console.log(`${filename} ${type}生成成功！`);
+                            });
+                        }
+                    });
+                });
+                req.on('error', (e) => {
+                    console.error(`请求遇到问题: ${e.message}`);
+                });
+                req.write(dataHTML);
+                req.end();
             });
         });
     }
