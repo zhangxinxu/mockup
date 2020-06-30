@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>原型地图和项目进度</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<!-- 使用lulu UI， https://l-ui.com -->
+<link rel="stylesheet" href="https://qidian.gtimg.com/lulu/theme/peak/css/common/ui/Table.css">
+<link rel="stylesheet" href="https://qidian.gtimg.com/lulu/theme/peak/css/common/color.css">
+<style>
+a {
+    color: #2486ff;
+}
+.ui-table .fit {
+    padding-left: 0;
+    padding-right: 0;
+}
+.bar {
+    height: 20px;
+    background-color: #f0f0f0;
+    margin: 5px 0 10px;
+}
+.bar::before {
+    counter-reset: progress var(--percent);
+    content: counter(progress) '%\2002';
+    display: block;
+    width: calc(100% * var(--percent) / 100);
+    font-size: 12px;
+    color: #fff;
+    background-color: #2486ff;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+}
+td:nth-of-type(2) .bar::before {
+    background-color: #f28c48;
+}
+</style>
+</head>
+<!-- 列表页 -->
+<body>
+<h1 align="center">原型地图和项目进度原型地图和项目进度原型地图和项目进度原型地图和项目进度</h1>
+<table class="ui-table">
+    <tr>
+      <th scope="col" width="15%">页面页面页面页面</th>
+      <th scope="col" class="fit">页面重构进度页面重构进度页面重构进度页面重构进度</th>
+      <th scope="col" class="fit">页面交互进度页面交互进度页面交互进度页面交互进度</th>
+      <th scope="col" width="100">计划交付日期计划交付日期计划交付日期计划交付日期</th>
+      <th scope="col" width="100">实际交付日期实际交付日期实际交付日期实际交付日期</th>
+      <th scope="col" width="100">交付状态交付状态交付状态交付状态</th>
+    </tr>
+    <tr>
+      <td><a href="./html/index.html">项目主页项目主页项目主页项目主页</a></td>
+      <td class="fit"><div class="bar" style="--percent: 100;"></div></td>
+      <td class="fit"><div class="bar" style="--percent: 100;"></div></td>
+      <td>2019-05-162019-05-162019-05-162019-05-16</td>
+      <td>2019-05-162019-05-162019-05-162019-05-16</td>
+      <td>已交付已交付已交付已交付<span class="green">（准时）（准时）（准时）（准时）</span></td>
+    </tr>
+    <tr>
+      <td><a href="./html/page1.html">项目子页1项目子页1项目子页1项目子页1</a></td>
+      <td class="fit"><div class="bar" style="--percent: 100;"></div></td>
+      <td class="fit"><div class="bar" style="--percent: 100;"></div></td>
+      <td>2019-05-202019-05-202019-05-202019-05-20</td>
+      <td>2019-05-222019-05-222019-05-222019-05-22</td>
+      <td>已交付已交付已交付已交付<span class="red">（延期）（延期）（延期）（延期）</span></td>
+    </tr>
+    <tr>
+      <td><a href="./html/page1.html">项目子页2项目子页2项目子页2项目子页2</a></td>
+      <td class="fit"><div class="bar" style="--percent: 40;"></div></td>
+      <td class="fit"><div class="bar" style="--percent: 0;"></div></td>
+      <td>2019-05-212019-05-212019-05-212019-05-21</td>
+      <td>----</td>
+      <td><span class="gray">待交付待交付待交付待交付</span></td>
+    </tr>
+</table>
+<p class="gray" align="center">说明：本页面可以让leader和项目组知道你的工作进度说明：本页面可以让leader和项目组知道你的工作进度说明：本页面可以让leader和项目组知道你的工作进度说明：本页面可以让leader和项目组知道你的工作进度</p>
+</body>
+</html>

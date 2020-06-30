@@ -1,0 +1,47 @@
+@charset "UTF-8";
+/**
+ *
+ * @home.css
+ * @author zhangxinxu
+ * @create 17-12-14
+ * @description 主页相关样式
+**/
+.home-p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.home-p > button {
+    width: 120px;
+    height: 40px;
+    /**
+     * 编译后依然使用原生变量语法，不会被替换，
+     * 因为_variable.css中未设置此变量
+     * 此变量在./common/variable.css中设置，无!;标识，不参与编译
+    */
+    border-radius: var(--borderRadius);
+}@charset "UTF-8";
+/**
+ *
+ * @page1.css
+ * @author zhangxinxu
+ * @create 17-12-14
+ * @description 子页1相关样式
+**/
+@charset "UTF-8";
+/**
+ *
+ * @page2.css
+ * @author zhangxinxu
+ * @create 17-12-14
+ * @description 子页2相关样式
+**/
+/* 下面为测试代码 */
+.class-a {
+    width: 100px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    left: 100px;
+    top: 100px;
+    float: left;
+}
