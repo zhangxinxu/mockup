@@ -123,12 +123,13 @@ const copy = function (src, dst, callback) {
 
 
 const imglist = [
-    'https://www.pakutaso.com/shared/img/thumb/tomcat1581_TP_V.jpg',
-    'https://www.pakutaso.com/shared/img/thumb/nekocyan458A5629_TP_V4.jpg',
-    'https://www.pakutaso.com/shared/img/thumb/tomneko12151301_TP_V.jpg',
-    'https://images.unsplash.com/photo-1593454878077-79fa932b79f1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1593363747901-b983a9d6b3b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1593418270780-4c6e6b7eb5af?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
+    'https://imgservices-1252317822.image.myqcloud.com/image/20200701/obiovu02uy.jpg',
+	'https://imgservices-1252317822.image.myqcloud.com/image/20200701/f0tutqgdiv.jpg',
+	'https://imgservices-1252317822.image.myqcloud.com/image/20200701/zh6l6azztp.jpg',
+	'https://imgservices-1252317822.image.myqcloud.com/image/20200701/8dzh5p5jg7.jpg',
+	'https://imgservices-1252317822.image.myqcloud.com/image/20200701/scmo69275p.jpg',
+	'https://imgservices-1252317822.image.myqcloud.com/image/20200701/c5g6yl6np0.jpg',
+	'https://imgservices-1252317822.image.myqcloud.com/image/20200701/73dajixpc6.jpg'
 ]
 
 const pathSrc = './dist/';
@@ -160,12 +161,16 @@ tasks.forEach(function(task){
     const dist = pathDist+task.dir;
     createPath(dist);
     copy(pathSrc,dist,function(file,dst){
-        const reg_txt = /(?<=>)[^<>\n]+(?=<(?!\/title|\/style|\/script))/g;
-        const reg_img = /<img [^>]*src=['"]([^'"]+)[^>]*>/gi;
-        return file.replace(reg_txt,function(txt){
-            return txt.repeat(task.times);
-        }).replace(reg_img, function (match, capture) {
-            return match.replace(capture,task.img?randomImg():null)
-        });
+        const reg_txt = /(?<=(?<!script[^>]*)>)[^<>]+(?=<(?!\/title|\/style|\/script))/g;
+		const reg_img = /<img [^>]*src=['"]([^'"]+)[^>]*>/gi;
+		return file.replace(reg_txt,function(txt){
+			if(txt.trim()){
+				return txt.repeat(task.times);
+			}else{
+				return txt;
+			}
+		}).replace(reg_img, function (match, capture) {
+			return match.replace(capture,task.img?randomImg():null);
+		});
     });
 })
