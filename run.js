@@ -67,9 +67,9 @@ const combo = function (arrUrls, strUrl, filter) {
 				var lines = content.split('\n');
 				// 总行数
 				var num = lines.length;
-				// 注视行数
+				// 注释行数
 				var commentNum = lines.filter(line => new RegExp('^(//|/\\*|\\*|\\*/)', 'g').test(line.trim())).length;
-				var rate = (commentNum / num * 100).toFixed(1);
+				var rate = Math.round((commentNum / num * 10000)) / 100;
 				console.log('资源合并为' + strUrl + '成功，注释率是' + rate + '%');
 			} else {
 				console.log('资源合并为' + strUrl + '成功');
