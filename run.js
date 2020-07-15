@@ -75,7 +75,7 @@ const combo = function (arrUrls, strUrl, filter) {
 					if (/^\/\*/.test(line.trim())) {
 						numLeft = index;
 					}
-					if (/^\*\//.test(line.trim())) {
+					if (/\*\/$/.test(line.trim())) {
 						numRight = index;
 						commentNum += (numRight - numLeft + 1);
 					}
@@ -84,6 +84,7 @@ const combo = function (arrUrls, strUrl, filter) {
 					}
 				});
 				var rate = Math.round((commentNum / num * 10000)) / 100;
+				console.log('---------------', commentNum, num);
 				console.log('资源合并为' + strUrl + '成功，注释率是' + rate + '%');
 			} else {
 				console.log('资源合并为' + strUrl + '成功');
