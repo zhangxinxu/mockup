@@ -68,7 +68,21 @@ const combo = function (arrUrls, strUrl, filter) {
 				// 总行数
 				var num = lines.length;
 				// 注释行数
-				var commentNum = lines.filter(line => new RegExp('^(//|/\\*|\\*|\\*/)', 'g').test(line.trim())).length;
+				var commentNum = 0;
+				var numLeft = -1;
+				var numRight = 0;
+				lines.forEach((line, index) => {
+					if (/^\/\*/.test(line.trim())) {
+						numLeft = index;
+					}
+					if (/^\*\//.test(line.trim())) {
+						numRight = index;
+						commentNum += (numRight - numLeft + 1);
+					}
+					if (/^\/\//.test(line.trim()) && numRight > numLeft) {
+						commentNum++;
+					}
+				});
 				var rate = Math.round((commentNum / num * 10000)) / 100;
 				console.log('资源合并为' + strUrl + '成功，注释率是' + rate + '%');
 			} else {
