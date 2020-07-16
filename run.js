@@ -72,7 +72,7 @@ const combo = function (arrUrls, strUrl, filter) {
 				var numLeft = -1;
 				var numRight = 0;
 				lines.forEach((line, index) => {
-					if (/^\/\*/.test(line.trim())) {
+					if (/^\/\*/.test(line.trim()) && numRight > numLeft) {
 						numLeft = index;
 					}
 					if (/\*\/$/.test(line.trim())) {
