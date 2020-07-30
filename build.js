@@ -288,7 +288,6 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
                     // 如果是符合替换规则的URL地址
                     if ($1.indexOf(urlStaticFrom) != -1) {
                         // 同时存储了hash版本号
-                        console.log(jsonVersion[originName]);
                         if (jsonVersion[originName]) {
                             if (type == 'oa' || type == 'dev') {
                                 versionName = originName.replace(/(\.[a-z]+)$/, `.${jsonVersion[originName]}` + '$1');
@@ -337,6 +336,13 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
                     });
                     req.on('error', (e) => {
                         console.error(`请求遇到问题: ${e.message}`);
+
+                        // 于是生成新的HTML文件
+                        fs.writeFile(path.join(pathBuildServer, type, filename), dataBuild, {
+                            encoding: 'utf8'
+                        }, function () {
+                            console.log(`${filename} ${type}替换为非压缩版本`);
+                        });
                     });
                     req.write(dataHTML);
                     req.end();
