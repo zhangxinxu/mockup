@@ -15,6 +15,15 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 
+const {createHash} = require('crypto');
+const encrypt = (algorithm, content) => {
+    let hash = createHash(algorithm);
+    hash.update(content);
+    return hash.digest('hex');
+};
+
+const md5 = (content) => encrypt('md5', content);
+
 /*
 ** 删除文件极其目录方法
 ** @src 删除的目录
@@ -93,6 +102,13 @@ const createPath = function (path) {
  * @param{ String } 需要复制的目录
  * @param{ String } 复制到指定的目录
  */
+const copyFile = function (fileA, fileB) {
+    let readable = fs.createReadStream(fileA);
+    // 创建写入流
+    let writable = fs.createWriteStream(fileB);
+    // 通过管道来传输流
+    readable.pipe(writable);
+};
 const copy = function (src, dst) {
     if (!fs.existsSync(src)) {
         return;
@@ -110,12 +126,7 @@ const copy = function (src, dst) {
 
         // 判断是否为文件
         if (st.isFile()) {
-            // 创建读取流
-            readable = fs.createReadStream(_src);
-            // 创建写入流
-            writable = fs.createWriteStream(_dst);
-            // 通过管道来传输流
-            readable.pipe(writable);
+            copyFile(_src, _dst);
         } else if (st.isDirectory()) {
             // 作为文件夹处理
             createPath(_dst);
@@ -136,7 +147,7 @@ const opt = {
     method: 'POST',
     path: '/minify/api/minify',
     headers: {
-        "Content-Type": 'application/json',
+        'Content-Type': 'application/json'
     }
 };
 
@@ -147,62 +158,70 @@ let config = {
 
     // 测试页面，如果不需要，去掉或值为空即可
     oa: 'https://oaqidian.gtimg.com/proj-name',
-    dev: 'https://devqidian.gtimg.com/proj-name'
+    dev: 'https://devqidian.gtimg.com/proj-name',
+    pre: 'https://preqidian.gtimg.com/proj-name'
 };
 
 // 新建build文件夹，如果没有
-const pathBilid = './build';
-if (!fs.existsSync(pathBilid)) {
-    createPath(pathBilid);
+const pathBuild = './build';
+if (!fs.existsSync(pathBuild)) {
+    createPath(pathBuild);
 }
 
-let pathBilidOa = path.join(pathBilid, 'oa');
+const pathBuildServer = path.join(pathBuild, 'server');
+
+let pathBuildOa = path.join(pathBuildServer, 'oa');
 if (config.oa) {
-    clean(pathBilidOa);
-    createPath(pathBilidOa);
+    clean(pathBuildOa);
+    createPath(pathBuildOa);
 }
-let pathBilidDev = path.join(pathBilid, 'dev');
+let pathBuildDev = path.join(pathBuildServer, 'dev');
 if (config.oa) {
-    clean(pathBilidDev);
-    createPath(pathBilidDev);
+    clean(pathBuildDev);
+    createPath(pathBuildDev);
+}
+let pathBuildPre = path.join(pathBuildServer, 'pre');
+if (config.pre) {
+    clean(pathBuildPre);
+    createPath(pathBuildPre);
 }
 
 // 静态资源的版本
-const pathBuildVersion = path.join(pathBilid, 'version.json');
 let jsonVersion = {};
 
-if (fs.existsSync(pathBuildVersion)) {
-    jsonVersion = JSON.parse(fs.readFileSync(pathBuildVersion));
-}
-
 // 静态资源拷贝
-const pathBilidStatic = path.join(pathBilid, 'static');
-copy(pathDistStatic, pathBilidStatic);
+const pathBuildStatic = path.join(pathBuild, 'static');
+copy(pathDistStatic, pathBuildStatic);
 
 // 版本号检测
 [pathDistCSS, pathDistJS].forEach(function (src, index) {
     var suffix = ['css', 'js'][index];
     fs.readdirSync(src).forEach(function (filename) {
         if (/\.(?:css|js)$/.test(filename)) {
-            let currentVersion = jsonVersion[filename];
-            // 第一次这个CSS文件
-            // 或者当前版本CSS和新的CSS内容不一样，则版本更新
+            // 获取dist目录下静态资源的内容
             let dataCurrent = fs.readFileSync(path.join(src, filename), 'utf8');
-            let dataVersion = '';
-            if (currentVersion) {
-                var nameNew = filename.replace('.' + suffix, `.${currentVersion}.${suffix}`);
+            // 根据内容生成MD5，然后使用md5部分字符作为版本
+            // 取最后6位
+            let md5Filename = md5(dataCurrent).slice(-6);
 
-                dataVersion = fs.readFileSync(path.join(pathBilidStatic, suffix, nameNew), 'utf8');
-            }
+            let hashName = filename.replace('.' + suffix, `.${md5Filename}.${suffix}`);
+            let minName = hashName.replace('.' + suffix, '.min.' + suffix);
 
-            // 创建新的CSS
-            if (!currentVersion || (dataCurrent != dataVersion)) {
-                // 版本递增
-                jsonVersion[filename] = (currentVersion || 0) + 1;
+            jsonVersion[filename] = md5Filename;
 
-                // 新的版本文件创建
-                nameNew = filename.replace('.' + suffix, `.${jsonVersion[filename]}.${suffix}`);
+            // 看看有没有当前hashName的文件
+            // 如果有，说明文件内容没有变化
+            // 如果没有，则说明文件内容发生了变化，重新生成
+            let pathStaticSuffix = path.join(pathBuildStatic, suffix, hashName);
+            let pathStaticSuffixMin = path.join(pathBuildStatic, suffix, minName);
 
+            if (!fs.existsSync(pathStaticSuffix)) {
+                // 写入dataCurrent到新文件
+                console.log(filename + '发生变化，新文件' + pathStaticSuffix + '生成成功！');
+
+                copyFile(path.join(src, filename), pathStaticSuffix);
+
+                // 创建压缩版本
                 const data = JSON.stringify({
                     type: suffix,
                     code: dataCurrent
@@ -216,17 +235,22 @@ copy(pathDistStatic, pathBilidStatic);
                     }).on('end', function () {
                         body = JSON.parse(body);
                         if (body.code === 0) {
-                            dataCurrent = body.data.code;
-                            fs.writeFile(path.join(pathBilidStatic, suffix, nameNew), dataCurrent, {
+                            fs.writeFile(pathStaticSuffixMin, body.data.code, {
                                 encoding: 'utf8'
                             }, function () {
-                                console.log(nameNew + '发生变化，新版本生成成功！');
+                                console.log(minName + '压缩版本生成成功！');
                             });
                         }
                     });
                 });
                 req.on('error', (e) => {
                     console.error(`请求遇到问题: ${e.message}`);
+
+                    fs.writeFile(pathStaticSuffixMin, dataCurrent, {
+                        encoding: 'utf8'
+                    }, function () {
+                        console.log(minName + '使用非压缩版本代替');
+                    });
                 });
                 req.write(data);
                 req.end();
@@ -237,12 +261,6 @@ copy(pathDistStatic, pathBilidStatic);
     });
 });
 
-// 存储版本号数据
-fs.writeFile(pathBuildVersion, JSON.stringify(jsonVersion), {
-    encoding: 'utf8'
-}, function () {
-    console.log(pathBuildVersion + '保存成功！');
-});
 
 // 遍历html页面
 fs.readdirSync(pathDistHTML).forEach(function (filename) {
@@ -258,15 +276,26 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
 
             let regUrl = /(?:href|src)="([\w\W]+?)"/g;
 
-            ['', 'oa', 'dev'].forEach(function (type) {
+            ['', 'oa', 'dev', 'pre'].forEach(function (type) {
+                // 这里data.replace的代码注意解决2个问题：
+                // 1. 相对地址转换成线上的绝对地址（config配置）
+                // 2. 根据类型不同，使用压缩版本或非压缩版本（均使用带hash的文件名）
                 let dataBuild = data.replace(regUrl, function (matches, $1) {
+                    // originName是文件名，例如main.js
                     let originName = $1.split('/').slice(-1)[0];
+                    // versionName是带hash版本号的名称
                     let versionName = originName;
+                    // 如果是符合替换规则的URL地址
                     if ($1.indexOf(urlStaticFrom) != -1) {
-                        if (originName && jsonVersion[originName]) {
-                            var arrSplit = versionName.split('.');
-                            arrSplit.splice(-1, 0, jsonVersion[originName]);
-                            versionName = arrSplit.join('.');
+                        // 同时存储了hash版本号
+                        console.log(jsonVersion[originName]);
+                        if (jsonVersion[originName]) {
+                            if (type == 'oa' || type == 'dev') {
+                                versionName = originName.replace(/(\.[a-z]+)$/, `.${jsonVersion[originName]}` + '$1');
+                            } else {
+                                // 这是带min的压缩版本
+                                versionName = originName.replace(/(\.[a-z]+)$/, `.${jsonVersion[originName]}.min` + '$1');
+                            }
                         }
                         return matches.replace(urlStaticFrom, config[type || 'to']).replace(originName, versionName);
                     }
@@ -280,30 +309,38 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
                 });
                 var body = '';
 
-                const req = http.request(opt, function (res) {
-                    res.setEncoding('utf8');
-                    res.on('data', function (data) {
-                        body += data;
-                    }).on('end', function () {
-                        body = JSON.parse(body);
-                        if (body.code === 0) {
-                            if (type != 'oa') {
-                                dataBuild = body.data.code;
-                            }
-                            // 于是生成新的HTML文件
-                            fs.writeFile(path.join(pathBilid, type, filename), dataBuild, {
-                                encoding: 'utf8'
-                            }, function () {
-                                console.log(`${filename} ${type}生成成功！`);
-                            });
-                        }
+                // oa和dev版本的html不压缩
+                if (type == 'oa' || type == 'dev') {
+                    // 于是生成新的HTML文件
+                    fs.writeFile(path.join(pathBuildServer, type, filename), dataBuild, {
+                        encoding: 'utf8'
+                    }, function () {
+                        console.log(`${filename} ${type}生成成功！`);
                     });
-                });
-                req.on('error', (e) => {
-                    console.error(`请求遇到问题: ${e.message}`);
-                });
-                req.write(dataHTML);
-                req.end();
+                } else {
+                    // html进行压缩
+                    const req = http.request(opt, function (res) {
+                        res.setEncoding('utf8');
+                        res.on('data', function (data) {
+                            body += data;
+                        }).on('end', function () {
+                            body = JSON.parse(body);
+                            if (body.code === 0) {
+                                // 于是生成新的HTML文件
+                                fs.writeFile(path.join(pathBuildServer, type, filename), body.data.code, {
+                                    encoding: 'utf8'
+                                }, function () {
+                                    console.log(`${filename} ${type}生成成功！`);
+                                });
+                            }
+                        });
+                    });
+                    req.on('error', (e) => {
+                        console.error(`请求遇到问题: ${e.message}`);
+                    });
+                    req.write(dataHTML);
+                    req.end();
+                }
             });
         });
     }
