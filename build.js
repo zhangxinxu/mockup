@@ -224,7 +224,8 @@ copy(pathDistStatic, pathBuildStatic);
                 // 创建压缩版本
                 const data = JSON.stringify({
                     type: suffix,
-                    code: dataCurrent
+                    code: dataCurrent,
+                    isEs6: suffix === 'js' ? 1 : 0
                 });
                 var body = '';
 
