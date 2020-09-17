@@ -13,7 +13,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const http = require('http');
+const https = require('https');
 
 const {createHash} = require('crypto');
 const encrypt = (algorithm, content) => {
@@ -143,7 +143,7 @@ const pathDistHTML = './dist/views/html/';
 // 压缩
 const opt = {
     hostname: 'yux.yuewen.com',
-    port: '80',
+    port: '443',
     method: 'POST',
     path: '/minify/api/minify',
     headers: {
@@ -229,7 +229,7 @@ copy(pathDistStatic, pathBuildStatic);
                 });
                 var body = '';
 
-                const req = http.request(opt, function (res) {
+                const req = https.request(opt, function (res) {
                     res.setEncoding('utf8');
                     res.on('data', function (data) {
                         body += data;
@@ -319,7 +319,7 @@ fs.readdirSync(pathDistHTML).forEach(function (filename) {
                     });
                 } else {
                     // html进行压缩
-                    const req = http.request(opt, function (res) {
+                    const req = https.request(opt, function (res) {
                         res.setEncoding('utf8');
                         res.on('data', function (data) {
                             body += data;
