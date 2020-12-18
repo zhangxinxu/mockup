@@ -10,6 +10,7 @@
 	4. 本地http环境一键开启，post/get请求轻松模拟
  * @url https://github.com/zhangxinxu/mockup
  * @license MIT 保留原作者和原出处
+ * @edit guoqing 2020-07-14 接口压缩 & js文件注释率
 */
 
 const fs = require('fs');
@@ -62,7 +63,31 @@ const combo = function (arrUrls, strUrl, filter) {
 		// 写入新目录
 		// 写入项目配置数据
 		fs.writeFile(strUrl, content, function () {
-			console.log('资源合并为' + strUrl + '成功');
+			if (/\.js$/.test(strUrl)) {
+				var lines = content.split('\n');
+				// 总行数
+				var num = lines.length;
+				// 注释行数
+				var commentNum = 0;
+				var numLeft = -1;
+				var numRight = 0;
+				lines.forEach((line, index) => {
+					if (/^\/\*/.test(line.trim()) && numRight > numLeft) {
+						numLeft = index;
+					}
+					if (/\*\/$/.test(line.trim())) {
+						numRight = index;
+						commentNum += (numRight - numLeft + 1);
+					}
+					if (/^\/\//.test(line.trim()) && numRight > numLeft) {
+						commentNum++;
+					}
+				});
+				var rate = Math.round((commentNum / num * 10000)) / 100;
+				console.log('资源合并为' + strUrl + '成功，注释率是' + rate + '%');
+			} else {
+				console.log('资源合并为' + strUrl + '成功');
+			}
 		});
 	}
 };
