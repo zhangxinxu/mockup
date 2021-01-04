@@ -14,6 +14,7 @@
     transform: rotate(-360deg);
   }
 }
+
 @charset "UTF-8";
 /**
  * 如果你项目需要使用原生的CSS变量，
@@ -66,6 +67,7 @@ a.blue:hover {
 .light {
     color: #f7f9fa;
 }
+
 @charset "UTF-8";
 /**
  * 如果你项目需要使用原生的CSS变量，
@@ -120,7 +122,8 @@ a.blue:hover {
     text-align: center;
     padding-top: 20px;
     padding-bottom: 20px;
-}@charset "UTF-8";
+}
+@charset "UTF-8";
 /**
  *
  * @lib.css
@@ -573,6 +576,7 @@ a.blue:hover {
     -ms-pointer-events: none;
     pointer-events: none;
 }
+
 @charset "UTF-8";
 /**
  * @description 简易常用CSS代码
@@ -607,6 +611,7 @@ button, input, select, textarea {
 a, a:hover {
     text-decoration: none;
 }
+
 /**
  * 这里书写CSS原生变量，
  * 中后台项目，移动端项目适合

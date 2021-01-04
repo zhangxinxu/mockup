@@ -8,8 +8,14 @@
 <link rel="import" href="./include/header.html?nav1=active">
 
 <div class="content">
-    <h2>主页内容</h2>
+    <h2>${title}</h2>
     <p class="home-p"><button id="btnPost">post测试</button></p>
+    <a href="">选项卡1</a>
+    <a href="" class="${tab==2 ? 'active': ''}">选项卡2</a>
+    <template>
+        <div>${name}${title}</div>
+        <div>${title}</div>
+    </template>
 </div>
 
 <link rel="import" href="./include/footer.html">
