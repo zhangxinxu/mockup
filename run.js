@@ -14,12 +14,31 @@
 */
 
 const fs = require('fs');
-stat = fs.stat;
+// stat = fs.stat;
 
 const path = require('path');
 const url = require('url');
 
 const http = require('http');
+
+const promise = (fn) => (...params) => new Promise((resolve, reject) => {
+    fn(...params, function (err, ...res) {
+		if (err) {
+			reject(err);
+		} else {
+			resolve(...res);
+		}
+	})
+
+})
+
+const fs_stat = promise(fs.stat);
+const fs_readFile = promise(fs.readFile);
+const fs_readdir = promise(fs.readdir);
+const fs_unlink = promise(fs.unlink);
+const fs_rmdir = promise(fs.rmdir);
+const fs_mkdir = promise(fs.mkdir);
+const fs_writeFile = promise(fs.writeFile);
 
 /*
 ** 文件合并方法
@@ -27,33 +46,45 @@ const http = require('http');
 ** @params strUrl String 合并后的文件名称
 */
 
-const combo = function (arrUrls, strUrl, filter) {
+const combo = async function (arrUrls, strUrl, filter) {
+	
 	var content = '';
 	// 遍历url并读取文件内容
 	if (arrUrls && arrUrls.length && strUrl) {
-		arrUrls.forEach(function (url) {
-			let st = fs.statSync(url);
+		await Promise.all(arrUrls.map(async function (url) {
+			let st = await fs_stat(url);
+			// let st = fs.statSync(url);
+			// console.log(url)
 			let filedata = '';
 			if (st.isFile() && /^_/.test(path.basename(url)) == false) {
 				// 如果是文件，且不是下划线开头
-				filedata = fs.readFileSync(url, 'utf8');
+				// filedata = fs.readFileSync(url, 'utf8');
+				filedata = await fs_readFile(url, 'utf8');
+				
 				if (/\.css$/.test(url)) {
-					filedata = qCss(url, filedata);
+					filedata = await qCss(url, filedata);
 				}
-				content += filedata;
+				return filedata
+				
 			} else if (st.isDirectory()) {
 				// 作为文件夹
-				fs.readdirSync(url).forEach(function (filename) {
+				const dir = await fs_readdir(url);
+				await Promise.all(dir.map(async function (filename) {
 					let dir = path.join(url, filename);
-					if (fs.statSync(dir).isFile() && /^_/.test(filename) == false) {
-						filedata = fs.readFileSync(dir, 'utf8');
+					let st = await fs_stat(dir);
+					if (st.isFile() && /^_/.test(filename) == false) {
+						filedata = await fs_readFile(dir, 'utf8');
 						if (/\.css$/.test(filename)) {
-							filedata = qCss(url, filedata);
+							filedata = await qCss(url, filedata);
 						}
-						content += filedata;
+						return filedata;
 					}
+				})).then(filedata => {
+					content += filedata.join('\n');
 				});
 			}
+		})).then(filedata => {
+			content += filedata.join('\n');
 		});
 
 		if (typeof filter == 'function') {
@@ -97,31 +128,33 @@ const combo = function (arrUrls, strUrl, filter) {
 ** 删除文件极其目录方法
 ** @src 删除的目录
 */
-const clean = function (src) {
+const clean = async function (src) {
 	if (!fs.existsSync(src)) {
 		return;
 	}
 
 	// 读取目录中的所有文件/目录
-	var paths = fs.readdirSync(src);
+	var paths = await fs_readdir(src);
 
-	paths.forEach(function (dir) {
+	paths.forEach( async function (dir) {
 		let _src = path.join(src, dir);
 
-		let st = fs.statSync(_src);
+		let st = await fs_stat(_src);
 
 		if (st.isFile()) {
 			// 如果是文件，则删除
-			fs.unlinkSync(_src);
+			// fs.unlinkSync(_src);
+			await fs_unlink(_src)
 		} else if (st.isDirectory()) {
 			// 作为文件夹
-			clean(_src);
+			await clean(_src);
 		}
 	});
 
 	// 删除文件夹
 	try {
-		fs.rmdirSync(src);
+		await fs_rmdir(src)
+		// fs.rmdirSync(src);
 		console.log('已清空文件夹' + src);
 	} catch(e) {}
 };
@@ -131,7 +164,7 @@ const clean = function (src) {
 ** 创建路径对应的文件夹（如果没有）
 ** @params path 目标路径
 */
-const createPath = function (path) {
+const createPath = async function (path) {
 	// 路径有下面这几种
 	// 1. /User/...      OS X
 	// 2. E:/mydir/...   window
@@ -148,7 +181,7 @@ const createPath = function (path) {
 		pathHTML = '';
 	}
 
-	path.split('/').forEach(function(filename) {
+	path.split('/').forEach( async function(filename) {
 		if (filename) {
 			// 如果是数据盘地址，忽略
 			if (/:/.test(filename) == false) {
@@ -156,7 +189,8 @@ const createPath = function (path) {
 				// 如果文件不存在
 				if(!fs.existsSync(pathHTML)) {
 					console.log('路径' + pathHTML + '不存在，新建之');
-					fs.mkdirSync(pathHTML);
+					// fs.mkdirSync(pathHTML);
+					await fs_mkdir(pathHTML)
 				}
 			} else {
 				pathHTML = filename;
@@ -171,20 +205,20 @@ const createPath = function (path) {
  * @param{ String } 需要复制的目录
  * @param{ String } 复制到指定的目录
  */
-const copy = function (src, dst) {
+const copy = async function (src, dst) {
 	if (!fs.existsSync(src)) {
 		return;
 	}
 
 	// 读取目录中的所有文件/目录
-	var paths = fs.readdirSync(src);
+	var paths = await fs_readdir(src);
 
-	paths.forEach(function (dir) {
+	paths.forEach( async function (dir) {
 		var _src = path.join(src, dir),
 			_dst = path.join(dst, dir),
 			readable, writable;
 
-		let st = fs.statSync(_src);
+		let st = await fs_stat(_src);
 
 		// 判断是否为文件
 		if (st.isFile()) {
@@ -196,8 +230,8 @@ const copy = function (src, dst) {
 			readable.pipe(writable);
 		} else if (st.isDirectory()) {
 			// 作为文件夹处理
-			createPath(_dst);
-			copy(_src, _dst);
+			await createPath(_dst);
+			await copy(_src, _dst);
 		}
 	});
 };
@@ -207,57 +241,66 @@ const copy = function (src, dst) {
 ** @src String html开发目录
 ** @dist String html编译目录
 */
-const compile = function (src, dist) {
+const compile = async function (src, dist) {
 	// 遍历文件夹下的文件
-	fs.readdirSync(src).forEach(function (filename) {
+	const _src = await fs_readdir(src);
+	_src.forEach( async function (filename) {
 		if (/\.html$/.test(filename)) {
 			// .html文件才处理
 			// 读文件内容
-			fs.readFile(path.join(src, filename), {
+			let data = await fs_readFile(path.join(src, filename), {
 				// 需要指定编码方式，否则返回原生buffer
 				encoding: 'utf8'
-			}, function (err, data) {
-				// 下面要做的事情就是把
-				// <link rel="import" href="header.html">
-				// 这段HTML替换成href文件中的内容
-				let arrQuery = [];
-				// 可以求助万能的正则
-				let dataReplace = data.replace(/<link\srel="import"\shref="(.*)">/gi, function (matchs, m1) {
-					// m1就是匹配的路径地址了
-					let roots = m1.split('?')[0];
+			})
 
-					if (m1 !== roots) {
-						arrQuery.push(m1.split('?')[1]);
-					}
+			// 下面要做的事情就是把
+			// <link rel="import" href="header.html">
+			// 这段HTML替换成href文件中的内容
+			let arrQuery = [];
+			// 可以求助万能的正则
+			const promises = [];
+			data.replace(/<link\srel="import"\shref="(.*)">/gi, function (matchs, m1) {
+				// m1就是匹配的路径地址了
+				let roots = m1.split('?')[0];
 
-					// 然后就可以读文件了
-					return fs.readFileSync(path.join(src, roots), {
-						encoding: 'utf8'
-					});
-				});
-
-				if (arrQuery.length) {
-					arrQuery.forEach(function (query) {
-						// 查询与替换
-						query.split('&').forEach(function (parts) {
-							let key = parts.split('=')[0];
-							let value = parts.split('=')[1] || '';
-
-							dataReplace = dataReplace.replace('$' + key + '$', value);
-						});
-					});
+				if (m1 !== roots) {
+					arrQuery.push(m1.split('?')[1]);
 				}
-
-				// 替换多余的变量
-				dataReplace = dataReplace.replace(/\$\w+\$/g, '');
-
-				// 于是生成新的HTML文件
-				fs.writeFile(path.join(dist, filename), dataReplace, {
+				promises.push(fs_readFile(path.join(src, roots),{
 					encoding: 'utf8'
-				}, function () {
-					console.log(filename + '生成成功！');
-				});
+				}));
 			});
+
+			await Promise.all(promises).then(results => {
+				data = data.replace(/<link\srel="import"\shref="(.*)">/gi, () => results.shift())
+			})
+
+			if (arrQuery.length) {
+				arrQuery.forEach(function (query) {
+					// 查询与替换
+					query.split('&').forEach(function (parts) {
+						let key = parts.split('=')[0];
+						let value = parts.split('=')[1] || '';
+
+						data = data.replace('$' + key + '$', value);
+					});
+				});
+			}
+
+			// 替换多余的变量
+			data = data.replace(/\$\w+\$/g, '');
+
+			// 于是生成新的HTML文件
+			await fs_writeFile(path.join(dist, filename), data, {
+				encoding: 'utf8'
+			})
+
+			console.log(filename + '生成成功！');
+
+			await fs_readFile(path.join(src, filename), {
+				// 需要指定编码方式，否则返回原生buffer
+				encoding: 'utf8'
+			})
 		}
 	});
 };
@@ -267,13 +310,14 @@ const compile = function (src, dist) {
 ** @params src 当前CSS文件所在路径
 ** @params data 字符数据
 */
-let qCss = function (src, data) {
+let qCss = async function (src, data) {
 	if (typeof data != 'string') {
 		console.error('data数据格式不对，原路返回');
 		return data;
 	}
 	// @import处理
-	data = data.replace(/@import\s+([\w\W]*?);/g, function (matchs, url) {
+	const promises = [];
+	data.replace(/@import\s+([\w\W]*?);/g, function (matchs, url) {
 		// 过滤引号，括号，或者url等
 		url = url.replace(/url|\'|\"|\(|\)/g, '');
 		// 判断css文件是否有
@@ -284,8 +328,16 @@ let qCss = function (src, data) {
 			return '/* '+ matchs +' */';
 		}
 		// 替换成对应文件内容
-		return fs.readFileSync(pathImportCss);
+		promises.push(fs_readFile(pathImportCss,{
+			encoding: 'utf8'
+		}));
+		// const res = await fs_readFile(pathImportCss);
+		// console.log(res)
+		// return res;
 	});
+	await Promise.all(promises).then(results => {
+		data = data.replace(/@import\s+([\w\W]*?);/g, () => results.shift())
+	})
 
 	// 计算出文件中设置CSS变量
 	// 只支持:root, html, body{}中的变量设置
@@ -328,8 +380,8 @@ let qCss = function (src, data) {
   				return valueMapCustom[keyVar] || varMatchs;
   			});
   		}).join(';'));
-  	});
-
+	  });
+	  
   	return data.replace(/[\r\n]+/g, '\n');
 };
 
@@ -343,68 +395,72 @@ const pathDistHTML = './dist/views/html/';
 // 任务
 const task = {
 	css: {
-		init: function () {
+		init: async function () {
 			// 资源清理
-			clean(pathDistCSS);
-			createPath(pathDistCSS);
+			await clean(pathDistCSS);
+			await createPath(pathDistCSS);
 
 			// 遍历CSS文件目录
 			// 以文件夹的形式进行合并（合并的CSS名称就是文件夹名称）
 			// 直接暴露在文件夹中的CSS不合并
-			fs.readdirSync(pathSrcCSS).forEach(function (filename) {
+			const _dir = await fs_readdir(pathSrcCSS);
+			_dir.forEach( async function (filename) {
 				let cssPath = path.join(pathSrcCSS, filename);
-				let st = fs.statSync(cssPath);
+				let st = await fs_stat(cssPath);
 				// 下划线开头的CSS文件不处理
 				if (st.isFile() && /\.css$/.test(filename) && /^_/.test(filename) == false) {
 					// 转移
-					fs.writeFileSync(path.join(pathDistCSS, filename), fs.readFileSync(cssPath, {
+					const dir = await fs_readFile(cssPath, {
 						encoding: 'utf8'
-					}), {
+					})
+					await fs_writeFile(path.join(pathDistCSS, filename),dir, {
 						encoding: 'utf8'
-					});
+					})
 				} else if (st.isDirectory()) {
-					combo([cssPath], pathDistCSS + filename + '.css');
+					await combo([cssPath], pathDistCSS + filename + '.css');
 				}
 			});
 		}
 	},
 	js: {
-		init: function () {
+		init: async function () {
 			// 删除原来的JS
-			clean(pathDistJS);
-			createPath(pathDistJS);
+			await clean(pathDistJS);
+			await createPath(pathDistJS);
 
 			// JS合并与转移
-			fs.readdirSync(pathSrcJS).forEach(function (filename) {
+			const _dir = await fs_readdir(pathSrcJS);
+			_dir.forEach( async function (filename) {
 				let jsPath = path.join(pathSrcJS, filename);
 				let jsPathTo = path.join(pathDistJS, filename);
-				let st = fs.statSync(jsPath);
+				let st = await fs_stat(jsPath);
 				if (st.isFile() && /\.js$/.test(filename)) {
 					// 转移
-					fs.writeFileSync(jsPathTo, fs.readFileSync(jsPath, {
+					const dir = await fs_readFile(jsPath, {
 						encoding: 'utf8'
-					}), {
+					})
+					await fs_writeFile(jsPathTo,dir, {
 						encoding: 'utf8'
-					});
+					})
 				} else if (st.isDirectory()) {
-					combo([jsPath], pathDistJS + filename + '.js');
+					await combo([jsPath], pathDistJS + filename + '.js');
 				}
 			});
 			// lib资源复制
-			createPath(pathDistJS + 'lib');
-			copy(pathSrcJS + 'common/lib', pathDistJS + 'lib');
+			await createPath(pathDistJS + 'lib');
+			await copy(pathSrcJS + 'common/lib', pathDistJS + 'lib');
 		}
 	},
 	html: {
-		compile: function () {
-			compile(pathSrcHTML, pathDistHTML);
+		compile: async function () {
+			await compile(pathSrcHTML, pathDistHTML);
 		},
-		init: function () {
+		init: async function () {
 			// 删除对应文件夹
-			clean(pathDistHTML);
-			createPath(pathDistHTML);
+			await clean(pathDistHTML);
+			await createPath(pathDistHTML);
 
-			this.compile();
+			await this.compile();
 		}
 	}
 };
@@ -497,7 +553,10 @@ let mimetype = {
 
 // 创建server
 let server = http.createServer(function (request, response) {
-	var pathname = url.parse(request.url).pathname;
+	var parse = url.parse(request.url);
+	var pathname = parse.pathname;
+	var query = parse.query;
+	console.log(JSON.stringify(query))
 	var realPath = path.join('dist', pathname);
 	//console.log(realPath);
 	var ext = path.extname(realPath);
