@@ -145,7 +145,7 @@ const opt = {
     hostname: 'yux.yuewen.com',
     port: '443',
     method: 'POST',
-    path: '/minify/api/minify',
+    path: '/minify/api/minify/v2',
     headers: {
         'Content-Type': 'application/json'
     }
@@ -189,6 +189,10 @@ if (config.pre) {
 // 静态资源的版本
 let jsonVersion = {};
 
+// 删除所有CSS和JS静态资源
+clean(path.join(pathBuild, 'static', 'css'));
+clean(path.join(pathBuild, 'static', 'js'));
+
 // 静态资源拷贝
 const pathBuildStatic = path.join(pathBuild, 'static');
 copy(pathDistStatic, pathBuildStatic);
@@ -215,53 +219,49 @@ copy(pathDistStatic, pathBuildStatic);
             let pathStaticSuffix = path.join(pathBuildStatic, suffix, hashName);
             let pathStaticSuffixMin = path.join(pathBuildStatic, suffix, minName);
 
-            if (!fs.existsSync(pathStaticSuffix)) {
-                // 写入dataCurrent到新文件
-                console.log(filename + '发生变化，新文件' + pathStaticSuffix + '生成成功！');
+            copyFile(path.join(src, filename), pathStaticSuffix);
 
-                copyFile(path.join(src, filename), pathStaticSuffix);
+            // 写入dataCurrent到新文件
+            console.log(filename + '复制到' + pathStaticSuffix + '成功！');
 
-                // 创建压缩版本
-                const data = JSON.stringify({
-                    type: suffix,
-                    code: dataCurrent,
-                    isEs6: suffix === 'js' ? 1 : 0
+            // 创建压缩版本
+            const data = JSON.stringify({
+                type: suffix,
+                code: dataCurrent,
+                isEs6: suffix === 'js' ? 1 : 0
+            });
+
+            var body = '';
+
+            const req = https.request(opt, function (res) {
+                res.setEncoding('utf8');
+                res.on('data', function (data) {
+                    body += data;
+                }).on('end', function () {
+                    body = JSON.parse(body);
+                    if (body.code === 0) {
+                        fs.writeFile(pathStaticSuffixMin, body.data.code, {
+                            encoding: 'utf8'
+                        }, function () {
+                            console.log(minName + '压缩版本生成成功！');
+                        });
+                    }
                 });
-                var body = '';
+            });
+            req.on('error', (e) => {
+                console.error(`请求遇到问题: ${e.message}`);
 
-                const req = https.request(opt, function (res) {
-                    res.setEncoding('utf8');
-                    res.on('data', function (data) {
-                        body += data;
-                    }).on('end', function () {
-                        body = JSON.parse(body);
-                        if (body.code === 0) {
-                            fs.writeFile(pathStaticSuffixMin, body.data.code, {
-                                encoding: 'utf8'
-                            }, function () {
-                                console.log(minName + '压缩版本生成成功！');
-                            });
-                        }
-                    });
+                fs.writeFile(pathStaticSuffixMin, dataCurrent, {
+                    encoding: 'utf8'
+                }, function () {
+                    console.log(minName + '使用非压缩版本代替');
                 });
-                req.on('error', (e) => {
-                    console.error(`请求遇到问题: ${e.message}`);
-
-                    fs.writeFile(pathStaticSuffixMin, dataCurrent, {
-                        encoding: 'utf8'
-                    }, function () {
-                        console.log(minName + '使用非压缩版本代替');
-                    });
-                });
-                req.write(data);
-                req.end();
-            } else {
-                console.log(filename + '没有变化，版本号保持不变');
-            }
+            });
+            req.write(data);
+            req.end();
         }
     });
 });
-
 
 // 遍历html页面
 fs.readdirSync(pathDistHTML).forEach(function (filename) {
