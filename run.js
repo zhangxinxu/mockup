@@ -72,7 +72,7 @@ const combo = async function (arrUrls, strUrl, filter) {
 				await Promise.all(dir.map(async function (filename) {
 					let dir = path.join(url, filename);
 					let st = await fs_stat(dir);
-					if (st.isFile() && /^_/.test(filename) == false) {
+					if (st.isFile() && /^_/.test(filename) == false && filename.split('.')[0]) {
 						filedata = await fs_readFile(dir, 'utf8');
 						if (/\.css$/.test(filename)) {
 							filedata = await qCss(url, filedata);
