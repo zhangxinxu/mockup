@@ -21,6 +21,8 @@ const url = require('url');
 
 const http = require('http');
 
+const uicheckstr = require('./inject-ui-check.js');
+
 const promise = (fn) => (...params) => new Promise((resolve, reject) => {
     fn(...params, function (err, ...res) {
 		if (err) {
@@ -72,7 +74,7 @@ const combo = async function (arrUrls, strUrl, filter) {
 				await Promise.all(dir.map(async function (filename) {
 					let dir = path.join(url, filename);
 					let st = await fs_stat(dir);
-					if (st.isFile() && /^_/.test(filename) == false) {
+					if (st.isFile() && /^_/.test(filename) == false && filename.split('.')[0]) {
 						filedata = await fs_readFile(dir, 'utf8');
 						if (/\.css$/.test(filename)) {
 							filedata = await qCss(url, filedata);
@@ -586,7 +588,12 @@ let server = http.createServer(function (request, response) {
 						'Content-Type': contentType
 					});
 					response.write(file, 'binary');
-					response.end();
+					if (mimetype[ext].includes('html')) {
+						// 如果是html就注入ui-check片段
+						response.end(uicheckstr);
+					} else {
+						response.end();
+					}
 				}
 			});
 		}
