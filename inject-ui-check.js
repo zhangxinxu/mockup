@@ -153,6 +153,7 @@ var injectStr = `
     border-radius: 40px;
     background: rgba(255,255,255,0.6);
     box-shadow: 0px 3px 10px rgb(0 0 0 / 8%), 0px 3px 10px rgb(0 0 0 / 8%);
+    z-index: 9999;
 }
 .ui-check-button{
     display: block;
