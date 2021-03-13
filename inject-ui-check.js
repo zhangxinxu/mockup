@@ -152,8 +152,12 @@ var injectStr = `
     background: #fff;
     border-radius: 40px;
     background: rgba(255,255,255,0.6);
-    box-shadow: 0px 3px 10px rgb(0 0 0 / 8%), 0px 3px 10px rgb(0 0 0 / 8%);
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
     z-index: 9999;
+    display: none;
+}
+:root .ui-check-btn-group {
+    display: block;
 }
 .ui-check-button{
     display: block;
@@ -211,29 +215,59 @@ var injectStr = `
 </div>
 <script>
 (function(){
-    var imglist = [
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/obiovu02uy.jpg',
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/f0tutqgdiv.jpg',
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/zh6l6azztp.jpg',
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/8dzh5p5jg7.jpg',
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/scmo69275p.jpg',
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/c5g6yl6np0.jpg',
-        'https://imgservices-1252317822.image.myqcloud.com/image/20200701/73dajixpc6.jpg'
-    ]
+
+    if (!String.prototype.repeat) {
+        String.prototype.repeat = function (count) {
+            'use strict';
+            if (this == null) {
+                throw new TypeError('cant convert ' + this + ' to object');
+            }
+            var str = '' + this;
+            count = +count;
+            if (count != count) {
+                count = 0;
+            }
+            if (count < 0) {
+                throw new RangeError('repeat count must be non-negative');
+            }
+            if (count == Infinity) {
+                throw new RangeError('repeat count must be less than infinity');
+            }
+            count = Math.floor(count);
+            if (str.length == 0 || count == 0) {
+                return '';
+            }
+            if (str.length * count >= 1 << 28) {
+                throw new RangeError('repeat count must not overflow maximum string size');
+            }
+            var rpt = '';
+            for (; ;) {
+                if ((count & 1) == 1) {
+                    rpt += str;
+                }
+                count >>>= 1;
+                if (count == 0) {
+                    break;
+                }
+                str += str;
+            }
+            return rpt;
+        }
+    }
 
     var text_nodes = [];
     var img_nodes = [];
 
     var map = function (nodes) {
-        nodes.childNodes.forEach(function (el) {
+        Array.prototype.concat.apply([],nodes.childNodes).forEach(function (el) {
             if (el.id === 'ui-check-btn-group' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') {
                 return
-            } else if (el.nodeType === Node.TEXT_NODE) {
+            } else if (el.nodeType === 3) {
                 if (el.data.trim() && !el.isRender) {
                     el.isRender = true;
                     text_nodes.push(el);
                 }
-            } else if (el.nodeType === Node.ELEMENT_NODE) {
+            } else if (el.nodeType === 1) {
                 if (el.tagName === 'IMG' && !el.isRender ) {
                     el.isRender = true;
                     img_nodes.push(el);
@@ -243,9 +277,10 @@ var injectStr = `
             }
         })
     }
-    var randomImg = function () {
-        var len = imglist.length;
-        return imglist[Math.floor(Math.random() * len)];
+    var randomImg = function (title) {
+        var w = parseInt(Math.random() * 75 + 5) * 10;
+        var h = parseInt(Math.random() * 75 + 5) * 10;
+        return 'https://via.placeholder.com/'+w+'x'+h+'?text='+(title||'ui-check');
     }
 
 
@@ -262,7 +297,7 @@ var injectStr = `
             if (!el.bak) {
                 el.bak = el.src;
             }
-            el.src = randomImg();
+            el.src = randomImg(el.alt||el.title);
         })
     }
 
@@ -296,7 +331,7 @@ var injectStr = `
             if (!el.bak) {
                 el.bak = el.src;
             }
-            el.src = Math.random() > .5 ? randomImg() : null;
+            el.src = Math.random() > .5 ? randomImg(el.alt||el.title) : null;
         })
     }
 
@@ -317,7 +352,7 @@ var injectStr = `
 
     
     var group = document.getElementById('ui-check-btn-group');
-    var btns = Array.prototype.slice.call(group.getElementsByTagName('button'));
+    var btns = Array.prototype.concat.apply([],group.getElementsByTagName('button'));
     // 关闭
     var close = function () {
         document.body.removeChild(group);
